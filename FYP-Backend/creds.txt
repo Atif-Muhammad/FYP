@@ -1,0 +1,6 @@
+email: fypdb1@gmail.com
+pass: fypdb@123
+
+atlas:
+user name: fyp
+password: fyppassword
