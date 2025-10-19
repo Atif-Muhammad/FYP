@@ -128,10 +128,21 @@ export const deleteMember = async (req, res) => {
 
 export const allMembers = async (req, res) => {
   try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = 30;
+
     const top = await topMembers();
-    const all = await findAll();
-    const membersAll = [...top, ...all]
-    res.status(200).json({ success: true, data: membersAll || [] });
+    const { members, total, pages } = await findAll(page, limit);
+
+    const data = page === 1 ? [...top, ...members] : members;
+
+    res.status(200).json({
+      success: true,
+      data,
+      page,
+      pages,
+      total,
+    });
   } catch (error) {
     res.status(500).json({ cause: error.message });
   }

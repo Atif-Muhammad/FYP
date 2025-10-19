@@ -77,8 +77,11 @@ export const deleteUpdate = async (req, res) => {
 // client controllers
 export const updates = async (req, res) => {
   try {
-    const allUpdates = await findAll();
-    res.status(200).json({ success: true, data: allUpdates || [] });
+    const page = parseInt(req.query.page) || 1;
+        const limit = 30;
+        const { data, total, pages} = await findAll(page, limit);
+    
+        res.status(200).json({ success: true, data, page, pages, total });
   } catch (error) {
     res.status(500).json({ cause: error.message });
   }

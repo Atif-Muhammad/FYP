@@ -36,12 +36,14 @@ export const removeEvent = async (req, res)=>{
     }
 }
 // client controllers
-export const allEvents = async (req, res)=>{
-    try {
-        const events = await findAll();
-        if(!events) return res.status(500).send("Unknown Error");
-        res.status(200).json({ success: true, data: events || [] });
-    } catch (error) {
-        res.status(500).send({cause: error.message})
-    }
-}
+export const allEvents = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = 30;
+    const result = await findAll(page, limit);
+
+    res.status(200).json({ success: true, ...result });
+  } catch (error) {
+    res.status(500).json({ cause: error.message });
+  }
+};

@@ -42,10 +42,30 @@ export const topMembers = async ()=>{
 
 }
 
-export const findAll = async ()=>{
-    try {
-        return await Member.find({$nor: [{role: "president"}, {role: "vice president"}, {role: "general secretary"}]}).sort({createdAt: -1});
-    } catch (error) {
-        throw new Error(error);
-    }
-}
+export const findAll = async (page = 1, limit = 30) => {
+  try {
+    const skip = (page - 1) * limit;
+    const members = await Member.find({
+      $nor: [
+        { role: "president" },
+        { role: "vice president" },
+        { role: "general secretary" },
+      ],
+    })
+      .sort({ createdAt: -1 })
+      .skip(skip)
+      .limit(limit);
+
+    const total = await Member.countDocuments({
+      $nor: [
+        { role: "president" },
+        { role: "vice president" },
+        { role: "general secretary" },
+      ],
+    });
+
+    return { members, total, page, pages: Math.ceil(total / limit) };
+  } catch (error) {
+    throw new Error(error);
+  }
+};

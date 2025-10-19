@@ -25,9 +25,16 @@ export const remove = async (mediaID)=>{
 }
 
 // client services
-export const findAll = async ()=>{
+export const findAll = async (page = 1, limit = 30)=>{
     try {
-        return await Gallery.find({}).sort({createdAt: -1});
+        const skip = (page - 1) * limit;
+            const data = await Gallery.find({})
+              .sort({ createdAt: -1 })
+              .skip(skip)
+              .limit(limit);
+        
+            const total = await Gallery.countDocuments();
+            return { data, total, page, pages: Math.ceil(total / limit) };
     } catch (error) {
         throw new Error(error)
     }
