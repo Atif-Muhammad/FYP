@@ -36,41 +36,44 @@ export const dashboard = async ()=>{
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-export const getMembers = async ()=>{
+export const getMembers = async ({ pageParam = 1 }) => {
+  try {
+    const response = await axios.get(
+      `${base_url}/members/client/allMembers?page=${pageParam}`,
+      { withCredentials: true }
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+export const getPrograms = async ({ pageParam = 1 })=>{
     try {
-        const response = await axios.get(`${base_url}/members/client/allMembers`, {withCredentials: true})
+        const response = await axios.get(`${base_url}/programs/client/allPrograms?page=${pageParam}`, {withCredentials: true})
         return response.data;
     } catch (error) {
         throw new Error(error);
     }
 }
-export const getPrograms = async ()=>{
+export const getEvents = async ({ pageParam = 1 })=>{
     try {
-        const response = await axios.get(`${base_url}/programs/client/allPrograms`, {withCredentials: true})
+        const response = await axios.get(`${base_url}/events/client/events?page=${pageParam}`, {withCredentials: true})
         return response.data;
     } catch (error) {
         throw new Error(error);
     }
 }
-export const getEvents = async ()=>{
+export const getUpdates = async ({ pageParam = 1 })=>{
     try {
-        const response = await axios.get(`${base_url}/events/client/events`, {withCredentials: true})
+        const response = await axios.get(`${base_url}/updates/client/updates?page=${pageParam}`, {withCredentials: true})
         return response.data;
     } catch (error) {
         throw new Error(error);
     }
 }
-export const getUpdates = async ()=>{
+export const getGallery = async ({ pageParam = 1 })=>{
     try {
-        const response = await axios.get(`${base_url}/updates/client/updates`, {withCredentials: true})
-        return response.data;
-    } catch (error) {
-        throw new Error(error);
-    }
-}
-export const getGallery = async ()=>{
-    try {
-        const response = await axios.get(`${base_url}/gallery/client/gallery`, {withCredentials: true})
+        const response = await axios.get(`${base_url}/gallery/client/gallery?page=${pageParam}`, {withCredentials: true})
         return response.data;
     } catch (error) {
         throw new Error(error);

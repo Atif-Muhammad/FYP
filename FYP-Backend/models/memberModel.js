@@ -58,4 +58,6 @@ const memberSchema = mongoose.Schema({
   }
 }, {timestamps: true});
 
+memberSchema.index({role: 1, createdAt: -1})
+
 export default mongoose.model("Member", memberSchema)

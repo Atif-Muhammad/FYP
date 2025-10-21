@@ -72,12 +72,13 @@ export const removeMedia = async (req, res) => {
 
 // client controllers
 export const gallery = async (req, res) => {
-    try {
-        const allMedia = await findAll();
-        if (!allMedia) return res.status(500).send("Unexpected Error");
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const limit = 30;
+    const { data, total, pages} = await findAll(page, limit);
 
-        res.status(200).json({ success: true, data: allMedia || [] });
-    } catch (error) {
-        res.status(500).send({ cause: error.message });
-    }
+    res.status(200).json({ success: true, data, page, pages, total });
+  } catch (error) {
+    res.status(500).json({ cause: error.message });
+  }
 };
