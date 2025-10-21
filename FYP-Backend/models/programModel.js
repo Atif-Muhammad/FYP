@@ -25,5 +25,5 @@ const programSchema = mongoose.Schema({
   },
 }, {timestamps: true});
 
-programSchema.createIndex({createdAt:-1});
+programSchema.index({createdAt:-1});
 export default mongoose.model("Program", programSchema);
