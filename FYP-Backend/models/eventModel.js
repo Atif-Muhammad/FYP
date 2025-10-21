@@ -18,5 +18,6 @@ const eventSchema = mongoose.Schema({
         require: true
     }
 }, {timestamps: true});
+eventSchema.createIndex({createdAt:-1});
 
 export default mongoose.model("Event", eventSchema);

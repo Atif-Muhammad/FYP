@@ -30,4 +30,6 @@ const updateSchema = mongoose.Schema({
     },
 }, {timestamps: true});
 
+updateSchema.createIndex({createdAt:-1});
+
 export default mongoose.model("Update", updateSchema)
