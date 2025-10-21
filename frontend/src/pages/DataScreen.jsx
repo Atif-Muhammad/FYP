@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { useParams } from "react-router-dom";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import { toast } from "react-hot-toast";
 import {
   getMembers,
   createMember,
@@ -89,9 +90,11 @@ function DataScreen() {
     onSuccess: () => {
       queryClient.invalidateQueries([dataFor]);
       setShowModal(false);
+      toast.success("Created successfully");
     },
     onError: (err) => {
       console.error(`Create ${dataFor} failed:`, err);
+      toast.error("Creation failed");
     },
   });
 
@@ -100,9 +103,11 @@ function DataScreen() {
     onSuccess: () => {
       queryClient.invalidateQueries([dataFor]);
       setShowModal(false);
+      toast.success("Updated successfully");
     },
     onError: (err) => {
       console.error(`Update ${dataFor} failed:`, err);
+      toast.error("Update failed");
     },
   });
 
@@ -110,9 +115,11 @@ function DataScreen() {
     mutationFn: (id) => deleteApiFn(id),
     onSuccess: () => {
       queryClient.invalidateQueries([dataFor]);
+      toast.success("Deleted successfully");
     },
     onError: (err) => {
       console.error(`Delete ${dataFor} failed:`, err);
+      toast.error("Delete failed");
     },
   });
 
@@ -140,6 +147,7 @@ function DataScreen() {
   };
 
   if (isLoading)
+    
     return (
       <div className="flex justify-center items-center min-h-[50vh]">
         <p className="animate-pulse text-gray-500">Loading {dataFor}...</p>
@@ -238,7 +246,7 @@ function DataScreen() {
     ${
       dataFor === "members"
         ? "space-y-3"
-        : "grid grid-cols-1 md:grid-cols-2 gap-6"
+        : "grid grid-cols-1 md:grid-cols-2 gap-6 items-start"
     }
   `}
       >

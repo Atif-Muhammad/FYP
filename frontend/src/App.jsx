@@ -5,8 +5,10 @@ import DataScreen from "./pages/DataScreen";
 import Auth from "./pages/Auth";
 import { useQuery } from "@tanstack/react-query";
 import { userWho } from "../config/apis";
+import {Toaster} from "react-hot-toast";  
 
 function App() {
+
   // check for user token
   // const currentUser = undefined;
   const {data: currentUser, isLoading} = useQuery({
@@ -17,6 +19,8 @@ function App() {
 
 
   return (
+  <>
+    <Toaster  position="bottom-right"></Toaster>
     <BrowserRouter>
       <Routes>
         {currentUser ? (
@@ -29,7 +33,7 @@ function App() {
         )}
       </Routes>
     </BrowserRouter>
-  );
+  </>);
 }
 
 export default App;
