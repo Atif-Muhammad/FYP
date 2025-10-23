@@ -64,7 +64,7 @@ function MemberCard({ member, onUpdate, onDelete }) {
                 <div><span className="font-medium">PK:</span> {member.pk}</div>
                 <div><span className="font-medium">Phone:</span> {member.phone}</div>
                 <div><span className="font-medium">Email:</span> {member.email}</div>
-                <div><span className="font-medium">About:</span> {member.about}</div>
+                <div><span className="font-medium">About:</span> <span className="whitespace-normal break-words w-[50vh] ">{member.about}</span></div>
               </div>
             </motion.div>
           )}

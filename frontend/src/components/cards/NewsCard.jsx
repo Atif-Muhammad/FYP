@@ -83,7 +83,7 @@ function NewsCard({ news, onUpdate, expanded, onToggle, onDelete }) {
                 transition={{ duration: 0.3 }}
                 className="border-t border-green-200/50 pt-3"
               >
-                <p className="text-gray-800 text-sm leading-relaxed">
+                <p className="text-gray-800 text-sm leading-relaxed break-words whitespace-normal">
                   {news.description || "No description available."}
                 </p>
               </motion.div>
