@@ -64,7 +64,7 @@ function ProgramCard({ program, expanded, onToggle, onUpdate, onDelete }) {
               transition={{ duration: 0.3 }}
               className="px-4 sm:px-5 pb-4 border-t border-gray-200 bg-gray-50"
             >
-              <p className="text-gray-700 text-sm sm:text-base break-words whitespace-pre-wrap">
+              <p className="text-gray-700 text-sm sm:text-base break-words whitespace-normal">
                 {program.description || "No description available."}
               </p>
             </motion.div>

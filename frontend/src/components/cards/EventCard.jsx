@@ -70,7 +70,7 @@ function EventCard({ event, onUpdate, expanded, onToggle, onDelete }) {
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="mt-4 border-t border-gray-200 pt-3 text-sm text-gray-700 leading-relaxed"
+              className="mt-4 border-t border-gray-200 pt-3 text-sm text-gray-700 leading-relaxed break-words whitespace-normal"
             >
               {event.description || "No description provided."}
             </motion.div>

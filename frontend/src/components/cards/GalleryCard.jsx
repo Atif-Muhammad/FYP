@@ -71,7 +71,7 @@ function GalleryCard({ media, onUpdate, expanded, onToggle, onDelete }) {
               transition={{ duration: 0.3 }}
               className="bg-gray-50 border-t border-purple-200/40 px-6 py-4 space-y-3"
             >
-              <p className="text-gray-700 text-sm leading-relaxed">
+              <p className="text-gray-700 text-sm break-words whitespace-normal leading-relaxed">
                 {media.description || "No description provided."}
               </p>
             </motion.div>
