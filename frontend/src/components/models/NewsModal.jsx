@@ -78,31 +78,21 @@ function NewsModal({ update, onClose, onSubmit }) {
   // 🟢 Submit form
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(true);
-
+    setLoading(prev=> !prev);
+    console.log(loading);
     const data = new FormData();
     data.append("title", formData.title);
     data.append("description", formData.description);
     data.append("validity", formData.validity);
     if (update) data.append("_id", update._id);
 
-    // 🔸 Image logic — consistent with backend
-    if (formData.image instanceof File) {
-      // New file uploaded
-      data.append("image", formData.image);
-    } else if (formData.image && typeof formData.image === "object") {
-      // Keep existing image (Cloudinary or base64 object)
-      data.append("image", JSON.stringify(formData.image));
-    }
-    // else no image => remove
-
     await onSubmit(data);
-    setLoading(false);
+    setLoading(prev=>!prev);
   };
 
   return (
-    <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50">
-      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 relative">
+    <div className="fixed inset-0 py-24 bg-black/40 backdrop-blur-sm flex items-center justify-center z-50 ">
+      <div className="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 relative  max-h-[90vh] overflow-y-auto">
         <button
           onClick={onClose}
           className="absolute top-3 right-3 text-gray-500 hover:text-gray-800"

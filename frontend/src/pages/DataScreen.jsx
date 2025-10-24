@@ -144,6 +144,10 @@ function DataScreen() {
     onSuccess: () => {
       queryClient.invalidateQueries([dataFor]);
       setShowModal(false);
+      toast.success("Created successfully");
+    },
+    onError: (err) => {
+      console.error(`Create ${dataFor} failed:`, err);
     },
   });
 
@@ -152,12 +156,21 @@ function DataScreen() {
     onSuccess: () => {
       queryClient.invalidateQueries([dataFor]);
       setShowModal(false);
+      toast.success("Updated successfully");
+    },
+    onError: (err) => {
+      console.error(`Update ${dataFor} failed:`, err);
     },
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id) => deleteApiFn(id),
-    onSuccess: () => queryClient.invalidateQueries([dataFor]),
+    onSuccess: () => {
+      queryClient.invalidateQueries([dataFor]);
+    },
+    onError: (err) => {
+      console.error(`Delete ${dataFor} failed:`, err);
+    },
   });
 
   const toggleExpand = (id) => setExpandedId((prev) => (prev === id ? null : id));
@@ -170,6 +183,7 @@ function DataScreen() {
   };
 
   if (isLoading)
+    
     return (
       <div className="flex justify-center items-center min-h-[50vh]">
         <p className="animate-pulse text-gray-500">Loading {dataFor}...</p>
@@ -246,11 +260,13 @@ function DataScreen() {
       </div>
 
       <div
-        className={`${
-          dataFor === "members"
-            ? "space-y-3"
-            : "grid grid-cols-1 md:grid-cols-2 gap-6"
-        }`}
+        className={`
+    ${
+      dataFor === "members"
+        ? "space-y-3"
+        : "grid grid-cols-1 md:grid-cols-2 gap-6"
+    }
+  `}
       >
         {renderCards()}
       </div>
