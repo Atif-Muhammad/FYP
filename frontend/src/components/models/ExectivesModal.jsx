@@ -12,7 +12,7 @@ import {
   UserRoundPen,
 } from "lucide-react";
 
-function ExectivesModal({ member, onClose, onSubmit }) {
+function ExecutivesModal({ member, onClose, onSubmit }) {
   const [formData, setFormData] = useState({
     name: "",
     role: "Chairman",
@@ -25,10 +25,9 @@ function ExectivesModal({ member, onClose, onSubmit }) {
   });
 
   const [preview, setPreview] = useState("");
-  const [isDragging, setIsDragging] = useState(false);
   const fileInputRef = useRef(null);
 
-  // Pre-fill when editing
+  // Prefill for editing
   useEffect(() => {
     if (member) {
       setFormData({
@@ -64,24 +63,6 @@ function ExectivesModal({ member, onClose, onSubmit }) {
     setPreview(URL.createObjectURL(file));
   };
 
-  // Drag & Drop handlers
-  const handleDragOver = (e) => {
-    e.preventDefault();
-    setIsDragging(true);
-  };
-
-  const handleDragLeave = (e) => {
-    e.preventDefault();
-    setIsDragging(false);
-  };
-
-  const handleDrop = (e) => {
-    e.preventDefault();
-    setIsDragging(false);
-    const file = e.dataTransfer.files[0];
-    handleImageChange(file);
-  };
-
   const handleFileSelect = () => fileInputRef.current?.click();
 
   const handleSubmit = async (e) => {
@@ -91,25 +72,49 @@ function ExectivesModal({ member, onClose, onSubmit }) {
     for (const key in formData) {
       if (key === "socials") {
         data.append("socials", JSON.stringify(formData.socials));
-      } else if (key === "image" && formData.image instanceof File) {
+      }
+      else if (key === "image" && formData.image instanceof File) {
         data.append("image", formData.image);
-      } else if (key === "image" && typeof formData.image === "object") {
-        data.append("image", JSON.stringify(formData.image));
+      }
+      else if (
+        key === "image" &&
+        formData.image &&
+        !(formData.image instanceof File)
+      ) {
+        data.append("existingImage", JSON.stringify(formData.image));
       } else {
         data.append(key, formData[key]);
       }
     }
-    if(member?._id) data.append("_id", member?._id)
+
+    if (member?._id) data.append("_id", member._id);
 
     await onSubmit(data);
   };
 
-  const fields = [
-    { label: "Name", name: "name", type: "text", icon: <User size={18} /> },
-    { label: "About", name: "about", type: "textArea", icon: <UserRoundPen size={18} /> },
-    { label: "District", name: "district", type: "text", icon: <MapPin size={18} /> },
-    { label: "Living In", name: "livingIn", type: "text", icon: <MapPin size={18} /> },
-    { label: "Message", name: "message", type: "textArea", icon: <MessageSquare size={18} /> },
+  const limitedToNameImageOnly = [
+    "Chief Election Officer",
+    "Youth Governor",
+  ].includes(formData.role);
+  const advisorRoles = [
+    "Legal Advisor",
+    "Technical Advisor",
+    "Political Advisor",
+    "Finance Advisor",
+  ];
+  const isAdvisor = advisorRoles.includes(formData.role);
+  const isPatron = formData.role === "Patron in Chief";
+  const isLeader = [
+    "Chairman",
+    "President",
+    "Vice President",
+    "General Secretary",
+  ].includes(formData.role);
+
+  const socialsFields = [
+    { label: "Facebook", name: "fb", icon: <Globe size={16} /> },
+    { label: "Instagram", name: "insta", icon: <Instagram size={16} /> },
+    { label: "Twitter / X", name: "twitter", icon: <Twitter size={16} /> },
   ];
 
   return (
@@ -117,13 +122,16 @@ function ExectivesModal({ member, onClose, onSubmit }) {
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-4xl max-h-[90vh] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-400 scrollbar-track-gray-100"
+        className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-4xl max-h-[90vh] overflow-y-auto"
       >
         <h2 className="text-2xl font-semibold mb-6 text-gray-800">
           {member ? "Edit Executive" : "Add New Executive"}
         </h2>
 
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        <form
+          onSubmit={handleSubmit}
+          className="grid grid-cols-1 md:grid-cols-2 gap-5"
+        >
           {/* Role */}
           <div className="md:col-span-2">
             <label className="block text-sm font-medium text-gray-600 mb-1">
@@ -137,7 +145,7 @@ function ExectivesModal({ member, onClose, onSubmit }) {
                 name="role"
                 value={formData.role}
                 onChange={handleChange}
-                className="w-full border border-gray-300 rounded-md pl-10 pr-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
+                className="w-full border border-gray-300 rounded-md pl-10 pr-3 py-2 focus:ring-2 focus:ring-blue-500"
               >
                 <option value="Chairman">Chairman</option>
                 <option value="Vice President">Vice President</option>
@@ -147,27 +155,29 @@ function ExectivesModal({ member, onClose, onSubmit }) {
                 <option value="Technical Advisor">Technical Advisor</option>
                 <option value="Political Advisor">Political Advisor</option>
                 <option value="Finance Advisor">Finance Advisor</option>
-                <option value="Chartered Accountant">Chartered Accountant</option>
+                <option value="Chief Election Officer">
+                  Chief Election Officer
+                </option>
+                <option value="Youth Governor">Youth Governor</option>
               </select>
             </div>
           </div>
 
           {/* Image Upload */}
           <div
-            className={`md:col-span-2 flex flex-col items-center border border-dashed rounded-xl p-4 transition ${
-              isDragging ? "border-blue-500 bg-blue-50" : "border-gray-300"
-            }`}
-            onDragOver={handleDragOver}
-            onDragLeave={handleDragLeave}
-            onDrop={handleDrop}
             onClick={handleFileSelect}
+            className="md:col-span-2 flex flex-col items-center border border-dashed rounded-xl p-4 cursor-pointer hover:border-blue-400 transition"
           >
-            <label className="text-sm font-medium text-gray-600 mb-2 flex items-center gap-2 cursor-pointer">
+            <label className="text-sm font-medium text-gray-600 mb-2 flex items-center gap-2">
               <ImageIcon size={18} /> Profile Image
             </label>
-            <div className="relative w-32 h-32 rounded-full overflow-hidden border border-gray-300 cursor-pointer">
+            <div className="relative w-32 h-32 rounded-full overflow-hidden border border-gray-300">
               {preview ? (
-                <img src={preview} alt="Preview" className="w-full h-full object-cover" />
+                <img
+                  src={preview}
+                  alt="Preview"
+                  className="w-full h-full object-cover"
+                />
               ) : (
                 <div className="w-full h-full flex items-center justify-center bg-gray-100">
                   <User size={40} className="text-gray-400" />
@@ -175,79 +185,141 @@ function ExectivesModal({ member, onClose, onSubmit }) {
               )}
             </div>
             <input
+              ref={fileInputRef}
               type="file"
               accept="image/*"
-              ref={fileInputRef}
               onChange={(e) => handleImageChange(e.target.files[0])}
               className="hidden"
             />
-            <p className="text-xs text-gray-500 mt-2">
-              Drag & drop an image or click to select
-            </p>
           </div>
 
-          {/* Text Fields */}
-          {fields.map((field) => (
-            <div key={field.name}>
-              <label className="block text-sm font-medium text-gray-600 mb-1">
-                {field.label}
-              </label>
-              <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
-                  {field.icon}
-                </span>
-                {field.type === "textArea" ? (
-                  <textarea
-                    name={field.name}
-                    value={formData[field.name] || ""}
-                    onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-md pl-10 pr-3 py-2 min-h-[80px] focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                ) : (
-                  <input
-                    type={field.type}
-                    name={field.name}
-                    value={formData[field.name] || ""}
-                    onChange={handleChange}
-                    className="w-full border border-gray-300 rounded-md pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  />
-                )}
-              </div>
+          {/* Name */}
+          <div className="md:col-span-2">
+            <label className="block text-sm font-medium text-gray-600 mb-1">
+              Name
+            </label>
+            <div className="relative">
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                <User size={18} />
+              </span>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                className="w-full border border-gray-300 rounded-md pl-10 pr-3 py-2 focus:ring-2 focus:ring-blue-500"
+              />
             </div>
-          ))}
+          </div>
 
-          {/* Socials */}
-          <div className="md:col-span-2 border-t pt-4 mt-2">
-            <h3 className="font-semibold text-gray-800 mb-2 flex items-center gap-2">
-              <Globe size={18} /> Social Links
-            </h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {[
-                { label: "Facebook", name: "fb", icon: <Globe size={16} /> },
-                { label: "Instagram", name: "insta", icon: <Instagram size={16} /> },
-                { label: "Twitter / X", name: "twitter", icon: <Twitter size={16} /> },
-              ].map((social) => (
-                <div key={social.name}>
+          {/* Conditional Fields */}
+          {!limitedToNameImageOnly && (
+            <>
+              {(isAdvisor || isPatron || isLeader) && (
+                <div className="md:col-span-2">
                   <label className="block text-sm font-medium text-gray-600 mb-1">
-                    {social.label}
+                    Message
                   </label>
                   <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
-                      {social.icon}
+                    <span className="absolute left-3 top-3 text-gray-500">
+                      <MessageSquare size={18} />
                     </span>
-                    <input
-                      type="url"
-                      name={social.name}
-                      value={formData.socials[social.name] || ""}
-                      onChange={handleSocialChange}
-                      placeholder={`https://${social.name}.com/...`}
-                      className="w-full border border-gray-300 rounded-md pl-10 pr-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    <textarea
+                      name="message"
+                      value={formData.message}
+                      onChange={handleChange}
+                      className="w-full border border-gray-300 rounded-md pl-10 pr-3 py-2 min-h-[80px] focus:ring-2 focus:ring-blue-500"
                     />
                   </div>
                 </div>
-              ))}
-            </div>
-          </div>
+              )}
+
+              {isLeader && (
+                <>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600 mb-1">
+                      About
+                    </label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-3 text-gray-500">
+                        <UserRoundPen size={18} />
+                      </span>
+                      <textarea
+                        name="about"
+                        value={formData.about}
+                        onChange={handleChange}
+                        className="w-full border border-gray-300 rounded-md pl-10 pr-3 py-2 min-h-[80px] focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600 mb-1">
+                      District
+                    </label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                        <MapPin size={18} />
+                      </span>
+                      <input
+                        type="text"
+                        name="district"
+                        value={formData.district}
+                        onChange={handleChange}
+                        className="w-full border border-gray-300 rounded-md pl-10 pr-3 py-2 focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-600 mb-1">
+                      Living In
+                    </label>
+                    <div className="relative">
+                      <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                        <MapPin size={18} />
+                      </span>
+                      <input
+                        type="text"
+                        name="livingIn"
+                        value={formData.livingIn}
+                        onChange={handleChange}
+                        className="w-full border border-gray-300 rounded-md pl-10 pr-3 py-2 focus:ring-2 focus:ring-blue-500"
+                      />
+                    </div>
+                  </div>
+
+                  {/* Social Links */}
+                  <div className="md:col-span-2 border-t pt-4 mt-2">
+                    <h3 className="font-semibold text-gray-800 mb-2 flex items-center gap-2">
+                      <Globe size={18} /> Social Links
+                    </h3>
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                      {socialsFields.map((social) => (
+                        <div key={social.name}>
+                          <label className="block text-sm font-medium text-gray-600 mb-1">
+                            {social.label}
+                          </label>
+                          <div className="relative">
+                            <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                              {social.icon}
+                            </span>
+                            <input
+                              type="url"
+                              name={social.name}
+                              value={formData.socials[social.name] || ""}
+                              onChange={handleSocialChange}
+                              className="w-full border border-gray-300 rounded-md pl-10 pr-3 py-2 focus:ring-2 focus:ring-blue-500"
+                            />
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                </>
+              )}
+            </>
+          )}
 
           {/* Buttons */}
           <div className="md:col-span-2 flex justify-end gap-3 pt-4">
@@ -271,4 +343,4 @@ function ExectivesModal({ member, onClose, onSubmit }) {
   );
 }
 
-export default ExectivesModal;
+export default ExecutivesModal;

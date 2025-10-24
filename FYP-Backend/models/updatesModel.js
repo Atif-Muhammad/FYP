@@ -10,9 +10,14 @@ const updateSchema = mongoose.Schema({
         type: String,
         require: true
     },
-    validity: {
+    validityType: {
         type: String,
+        enum: ["24hours", "2days", "3days", "4days","5days", "1week", "Until I Change"],
         require: true
+    },
+    validity: {
+        type: Date,
+        default: null,
     },
     image: {
         url: {
@@ -24,7 +29,7 @@ const updateSchema = mongoose.Schema({
             require: true,
         },
     },
-}, { timestamps: true });
+}, { timestamps: true },{expireAfterSeconds: 0});
 
 updateSchema.index({ createdAt: -1 });
 

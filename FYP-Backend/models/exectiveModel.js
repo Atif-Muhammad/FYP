@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const exectiveSchema = mongoose.Schema({
   role: {
     type: String,
-    enum: ["General Secretary", "Vice President", "Chairman", "Patron in Chief", "Legal Advisor", "Technical Advisor", "Political Advisor", "Finance Advisor"],
+    enum: ["General Secretary", "Vice President", "Chairman", "Patron in Chief", "Legal Advisor", "Technical Advisor", "Political Advisor", "Finance Advisor", "Chief Election Officer", "Youth Governor"],
     require: true,
     index: true
   },
@@ -23,7 +23,6 @@ const exectiveSchema = mongoose.Schema({
   },
   about: {
     type: String,
-    require: true,
   }, 
   district: {
     type: String,
@@ -38,7 +37,8 @@ const exectiveSchema = mongoose.Schema({
     fb: String,
     insta: String,
     twitter: String
-  }
+  },
+  province: String
 }, {timestamps: true});
 
 exectiveSchema.index({role: 1, createdAt: -1})

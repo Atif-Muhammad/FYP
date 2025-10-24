@@ -26,7 +26,7 @@ function ExectivesCard({ member, onUpdate, onDelete }) {
             </div>
             <div>
               <p className="font-semibold text-gray-800">{member.name} ({member.role})</p>
-              <p className="text-sm text-gray-500 w-10">about: {member.about}</p>
+              <p className="text-sm text-gray-500 w-10">about: {member.about ? member.about:(<strong>N/A</strong>)}</p>
             </div>
           </div>
 
@@ -59,14 +59,14 @@ function ExectivesCard({ member, onUpdate, onDelete }) {
               className="px-4 pb-4 border-t border-gray-100"
             >
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-2 pt-3 text-gray-700">
-                <div><span className="font-medium">From:</span> {member.district}</div>
-                <div><span className="font-medium">Living in:</span> {member.livingIn}</div>
+                <div><span className="font-medium">From:</span> {member.district ? member.district : (<strong>N/A</strong>) }</div>
+                <div><span className="font-medium">Living in:</span> {member.livingIn ? member.livingIn : (<strong>N/A</strong>)}</div>
                 <div><span className="font-medium">Socials:</span>
-                    <div>fb: {member.socials?.fb}</div>
-                    <div>insta: {member.socials?.insta}</div>
-                    <div>twitter: {member.socials?.twitter}</div>
+                    <div>fb: {member.socials?.fb ? member.socials?.fb : (<strong>N/A</strong>)}</div>
+                    <div>insta: {member.socials?.insta ? member.socials?.insta : (<strong>N/A</strong>)}</div>
+                    <div>twitter: {member.socials?.twitter ? member.socials?.twitter : (<strong>N/A</strong>)}</div>
                 </div>
-                <div><span className="font-medium">messsage:</span> {member.message}</div>
+                <div><span className="font-medium">messsage:</span> {member.message ? member.message:(<strong>N/A</strong>)}</div>
               </div>
             </motion.div>
           )}

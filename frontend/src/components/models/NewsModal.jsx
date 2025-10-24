@@ -14,12 +14,12 @@ function NewsModal({ update, onClose, onSubmit }) {
   const fileInputRef = useRef(null);
 
   const validityOptions = [
-    "24 hours",
-    "2 days",
-    "3 days",
-    "4 days",
-    "1 week",
-    "Until I change",
+    "24hours",
+    "2days",
+    "3days",
+    "4days",
+    "1week",
+    "Until I Change",
   ];
 
   // 🟡 Preload existing data when editing

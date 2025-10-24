@@ -1,4 +1,4 @@
-import { uploadFile } from "../services/cloudinary.service.js";
+import { removeFile, uploadFile } from "../services/cloudinary.service.js";
 import { create, findAll, findById, remove, update } from "../services/exective.service.js";
 
 
@@ -7,10 +7,12 @@ export const createExective = async (req, res) => {
     try {
         // console.log(req.body)
         const { name, role, about, district, livingIn, message } = req.body;
-        if (!name || !role || !about) return res.status(400).send("Missing Field(s)");
+        if (!name || !role) return res.status(400).send("Missing Field(s)");
+       
         if (!req.file)
             return res.status(400).send("Must provide an image of member");
         const url = await uploadFile(req.file);
+       
         const payload = {
             name, role, about, district, livingIn, message, image: url, socials: JSON.parse(req.body.socials)
         }

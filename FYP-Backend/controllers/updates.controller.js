@@ -4,26 +4,40 @@ import {
   remove,
   update,
 } from "../services/updates.service.js";
-import { uploadFile, removeFile } from "../services/cloudinary.service.js"
+import { uploadFile, removeFile } from "../services/cloudinary.service.js";
 import { findById } from "../services/updates.service.js";
+import { parseDuration } from "../utils/parseDuration.js";
 
 // admin controllers
 export const addUpdate = async (req, res) => {
   try {
-    // console.log(req.body)
     const { title, description, validity } = req.body;
+
     if (!title || !description || !validity)
       return res.status(400).send("Missing field(s)");
     if (!req.file)
       return res.status(400).send("Must provide an image for the update/news");
-   
-    const url = await uploadFile(req.file)
+
+    // Upload image (to Cloudinary or wherever you’re using)
+    const url = await uploadFile(req.file);
+
+    // Handle TTL validity
+    const normalized = validity.toLowerCase().trim();
+    const ttlMs = parseDuration(normalized);
+    let expiresAt = null;
+
+    if (normalized !== "until i change" && ttlMs) {
+      expiresAt = new Date(Date.now() + ttlMs);
+    }
+
     const payload = {
       title,
       description,
-      validity,
+      validityType: validity, 
+      validity: expiresAt, 
       image: url,
     };
+
     const newUpdate = await create(payload);
     if (!newUpdate) return res.status(500).send("Unexpected Error");
 
@@ -72,12 +86,18 @@ export const editUpdate = async (req, res) => {
       finalImage = undefined;
     }
 
+    const ttlMs = parseDuration(validity);
+
+    let expiresAt = null;
+    if (ttlMs) expiresAt = new Date(Date.now() + ttlMs);
+
     // 🧩 Final payload
     const payload = {
       _id,
       title,
       description,
-      validity,
+      validityType: validity,
+      validity: expiresAt,
       image: finalImage,
     };
 
@@ -90,7 +110,6 @@ export const editUpdate = async (req, res) => {
     res.status(500).json({ cause: error.message });
   }
 };
-
 
 export const deleteUpdate = async (req, res) => {
   try {
@@ -108,10 +127,10 @@ export const deleteUpdate = async (req, res) => {
 export const updates = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
-        const limit = 30;
-        const { data, total, pages} = await findAll(page, limit);
-    
-        res.status(200).json({ success: true, data, page, pages, total });
+    const limit = 30;
+    const { data, total, pages } = await findAll(page, limit);
+
+    res.status(200).json({ success: true, data, page, pages, total });
   } catch (error) {
     res.status(500).json({ cause: error.message });
   }
