@@ -33,38 +33,28 @@ export const deleteMemberService = async (memberID)=>{
 
 // client/admin services
 
-export const topMembers = async ()=>{
-    try {
-        return await Member.find({$or: [{role: "president"}, {role: "vice president"}, {role: "general secretary"}]});
-    } catch (error) {
-        throw new Error(error)
-    }
-
-}
 
 export const findAll = async (page = 1, limit = 30) => {
   try {
     const skip = (page - 1) * limit;
-    const members = await Member.find({
-      $nor: [
-        { role: "president" },
-        { role: "vice president" },
-        { role: "general secretary" },
-      ],
-    })
+    const members = await Member.find({})
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
 
-    const total = await Member.countDocuments({
-      $nor: [
-        { role: "president" },
-        { role: "vice president" },
-        { role: "general secretary" },
-      ],
-    });
+    const total = await Member.countDocuments({});
 
     return { members, total, page, pages: Math.ceil(total / limit) };
+  } catch (error) {
+    throw new Error(error);
+  }
+};
+
+
+export const findById = async (memberID) => {
+  try {
+    if (!memberID) throw new Error("Member id required");
+    return await Member.findById(memberID);
   } catch (error) {
     throw new Error(error);
   }

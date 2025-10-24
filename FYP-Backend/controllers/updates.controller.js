@@ -4,6 +4,8 @@ import {
   remove,
   update,
 } from "../services/updates.service.js";
+import { uploadFile, removeFile } from "../services/cloudinary.service.js"
+import { findById } from "../services/updates.service.js";
 
 // admin controllers
 export const addUpdate = async (req, res) => {
@@ -14,16 +16,13 @@ export const addUpdate = async (req, res) => {
       return res.status(400).send("Missing field(s)");
     if (!req.file)
       return res.status(400).send("Must provide an image for the update/news");
-    const { originalname, mimetype, buffer } = req.file;
+   
+    const url = await uploadFile(req.file)
     const payload = {
       title,
       description,
       validity,
-      image: {
-        originalname,
-        mimetype,
-        base64: buffer.toString("base64"),
-      },
+      image: url,
     };
     const newUpdate = await create(payload);
     if (!newUpdate) return res.status(500).send("Unexpected Error");
@@ -33,34 +32,65 @@ export const addUpdate = async (req, res) => {
     res.status(500).json({ cause: error.message });
   }
 };
+
+
 export const editUpdate = async (req, res) => {
   try {
-    // console.log(req.body);
     const { title, description, validity, _id } = req.body;
+
     if (!title || !description || !_id || !validity)
       return res.status(400).send("Missing field(s)");
-    const image = req.file
-      ? {
-          originalname: req.file.originalname,
-          mimetype: req.file.mimetype,
-          base64: req.file.buffer.toString("base64"),
-        }
-      : undefined;
+
+    // 🟡 Find existing record
+    const existing = await findById(_id);
+    if (!existing) return res.status(404).send("Record not found");
+
+    let finalImage = existing.image;
+
+    // 🟢 Case 1: new file uploaded → replace old
+    if (req.file) {
+      if (existing.image?.public_id) {
+        await removeFile(existing.image.public_id);
+      }
+      const uploaded = await uploadFile(req.file);
+      finalImage = uploaded;
+    }
+
+    // 🟢 Case 2: no new file, but image object sent → keep
+    else if (req.body.image) {
+      try {
+        const parsed = JSON.parse(req.body.image);
+        finalImage = parsed;
+      } catch {
+        finalImage = req.body.image;
+      }
+    }
+
+    // 🟢 Case 3: no file and no image in body → remove existing
+    else if (!req.file && !req.body.image && existing.image?.public_id) {
+      await removeFile(existing.image.public_id);
+      finalImage = undefined;
+    }
+
+    // 🧩 Final payload
     const payload = {
       _id,
       title,
       description,
       validity,
+      image: finalImage,
     };
-    if (image) payload.image = image;
+
     const updated = await update(payload);
     if (!updated) return res.status(500).send("Unexpected Error");
 
     res.status(200).json({ success: true, data: updated });
   } catch (error) {
+    console.error("Error editing update:", error);
     res.status(500).json({ cause: error.message });
   }
 };
+
 
 export const deleteUpdate = async (req, res) => {
   try {

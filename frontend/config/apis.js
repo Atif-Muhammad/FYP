@@ -47,6 +47,17 @@ export const getMembers = async ({ pageParam = 1 }) => {
     throw new Error(error);
   }
 };
+export const getExecs = async () => {
+  try {
+    const response = await axios.get(
+      `${base_url}/members/client/allExecs`,
+      { withCredentials: true }
+    );
+    return response.data;
+  } catch (error) {
+    throw new Error(error);
+  }
+};
 export const getPrograms = async ({ pageParam = 1 })=>{
     try {
         const response = await axios.get(`${base_url}/programs/client/allPrograms?page=${pageParam}`, {withCredentials: true})
@@ -80,6 +91,23 @@ export const getGallery = async ({ pageParam = 1 })=>{
     }
 }
 
+export const getAchievements = async ({pageParam =1})=>{
+    try {
+        const response = await axios.get(`${base_url}/achievements/client/all?page=${pageParam}`, {withCredentials: true})
+        return response.data;
+    } catch (error) {
+        throw new Error(error)
+    }
+}
+export const getAwards = async ({pageParam =1})=>{
+    try {
+        const response = await axios.get(`${base_url}/awards/client/all?page=${pageParam}`, {withCredentials: true})
+        return response.data;
+    } catch (error) {
+        throw new Error(error)
+    }
+}
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export const createMember = async (data)=>{
@@ -101,6 +129,32 @@ export const updateMember = async (data)=>{
 export const deleteMember = async (MemberID)=>{
     try {
         const response = await axios.delete(`${base_url}/members/admin/deleteMember?memberID=${MemberID}`, {withCredentials: true});
+        return response;
+    } catch (error) {
+        throw new Error(error);
+    }
+}
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+export const createExec = async (data)=>{
+    try {
+        const response = await axios.post(`${base_url}/members/admin/addExec`, data, {withCredentials: true});
+        return response;
+    } catch (error) {
+        throw new Error(error);
+    }
+}
+export const updateExec = async (data)=>{
+    try {
+        const response = await axios.patch(`${base_url}/members/admin/updateExec`, data, {withCredentials: true});
+        return response;
+    } catch (error) {
+        throw new Error(error);
+    }
+}
+export const deleteExec = async (MemberID)=>{
+    try {
+        const response = await axios.delete(`${base_url}/members/admin/deleteExec?memberID=${MemberID}`, {withCredentials: true});
         return response;
     } catch (error) {
         throw new Error(error);
@@ -216,6 +270,62 @@ export const updateGallery = async (data)=>{
 export const deleteGallery = async (mediaID)=>{
     try {
         const response = await axios.delete(`${base_url}/gallery/admin/deleteGallery?mediaID=${mediaID}`, {withCredentials: true});
+        return response;
+    } catch (error) {
+        throw new Error(error);
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+export const createAchievement = async (data)=>{
+    try {
+        const response = await axios.post(`${base_url}/achievements/admin/addAchievement`, data, {withCredentials: true});
+        return response;
+    } catch (error) {
+        throw new Error(error);
+    }
+}
+
+export const updateAchievement = async (data)=>{
+    try {
+        const response = await axios.patch(`${base_url}/achievements/admin/updateAchievement`, data, {withCredentials: true});
+        return response;
+    } catch (error) {
+        throw new Error(error);
+    }
+}
+
+export const deleteAchievement = async (achieveID)=>{
+    try {
+        const response = await axios.delete(`${base_url}/achievements/admin/deleteAchievement?achieveID=${achieveID}`, {withCredentials: true});
+        return response;
+    } catch (error) {
+        throw new Error(error);
+    }
+}
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+export const createAward = async (data)=>{
+    try {
+        const response = await axios.post(`${base_url}/awards/admin/createAward`, data, {withCredentials: true});
+        return response;
+    } catch (error) {
+        throw new Error(error);
+    }
+}
+
+export const updateAward = async (data)=>{
+    try {
+        const response = await axios.patch(`${base_url}/awards/admin/updateAward`, data, {withCredentials: true});
+        return response;
+    } catch (error) {
+        throw new Error(error);
+    }
+}
+
+export const deleteAward = async (awardID)=>{
+    try {
+        const response = await axios.delete(`${base_url}/awards/admin/deleteAward?awardID=${awardID}`, {withCredentials: true});
         return response;
     } catch (error) {
         throw new Error(error);

@@ -3,9 +3,10 @@ import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, ChevronUp, Pencil, Trash2, User } from "lucide-react";
 import MemberModal from "../models/MemberModel";
 import { BufferToBase64 } from "../../utils/bufferToBase64";
+import ExectivesModal from "../models/ExectivesModal";
 
 
-function MemberCard({ member, onUpdate, onDelete }) {
+function ExectivesCard({ member, onUpdate, onDelete }) {
   const [expanded, setExpanded] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
@@ -25,7 +26,7 @@ function MemberCard({ member, onUpdate, onDelete }) {
             </div>
             <div>
               <p className="font-semibold text-gray-800">{member.name} ({member.role})</p>
-              <p className="text-sm text-gray-500">CNIC: {member.CNIC}</p>
+              <p className="text-sm text-gray-500 w-10">about: {member.about}</p>
             </div>
           </div>
 
@@ -58,13 +59,14 @@ function MemberCard({ member, onUpdate, onDelete }) {
               className="px-4 pb-4 border-t border-gray-100"
             >
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-2 pt-3 text-gray-700">
-                <div><span className="font-medium">Father Name:</span> {member.father_name}</div>
-                <div><span className="font-medium">Date of Birth:</span> {member.DOB}</div>
-                <div><span className="font-medium">District:</span> {member.district}</div>
-                <div><span className="font-medium">PK:</span> {member.pk}</div>
-                <div><span className="font-medium">Phone:</span> {member.phone}</div>
-                <div><span className="font-medium">Email:</span> {member.email}</div>
-                <div><span className="font-medium">About:</span> {member.about}</div>
+                <div><span className="font-medium">From:</span> {member.district}</div>
+                <div><span className="font-medium">Living in:</span> {member.livingIn}</div>
+                <div><span className="font-medium">Socials:</span>
+                    <div>fb: {member.socials?.fb}</div>
+                    <div>insta: {member.socials?.insta}</div>
+                    <div>twitter: {member.socials?.twitter}</div>
+                </div>
+                <div><span className="font-medium">messsage:</span> {member.message}</div>
               </div>
             </motion.div>
           )}
@@ -72,7 +74,7 @@ function MemberCard({ member, onUpdate, onDelete }) {
       </div>
 
       {showModal && (
-        <MemberModal
+        <ExectivesModal
           member={member}
           onClose={() => setShowModal(false)}
           onSubmit={onUpdate}
@@ -82,4 +84,4 @@ function MemberCard({ member, onUpdate, onDelete }) {
   );
 }
 
-export default MemberCard;
+export default ExectivesCard;

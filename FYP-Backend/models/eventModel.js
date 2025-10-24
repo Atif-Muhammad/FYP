@@ -11,7 +11,8 @@ const eventSchema = mongoose.Schema({
     }, 
     eventDate: {
         type: String,
-        require: true
+        require: true,
+        index: true
     }, 
     location: {
         type: String,

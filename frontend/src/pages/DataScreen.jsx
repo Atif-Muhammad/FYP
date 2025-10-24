@@ -22,6 +22,18 @@ import {
   createUpdate,
   updateUpdate,
   deleteUpdate,
+  deleteExec,
+  updateExec,
+  createExec,
+  getExecs,
+  getAchievements,
+  getAwards,
+  createAchievement,
+  createAward,
+  updateAchievement,
+  updateAward,
+  deleteAchievement,
+  deleteAward,
 } from "../../config/apis";
 
 import MemberCard from "../components/cards/MemberCard";
@@ -35,6 +47,12 @@ import EventModal from "../components/models/EventModal";
 import NewsModal from "../components/models/NewsModal";
 import GalleryModal from "../components/models/GalleryModal";
 import Confirmation from "../components/ui/Confirmation";
+import ExectivesCard from "../components/cards/ExectivesCard";
+import ExectivesModal from "../components/models/ExectivesModal";
+import AchievementCard from "../components/cards/AchievementsCard";
+import AwardCard from "../components/cards/AwardsCard";
+import AchievementModal from "../components/models/AchievementsModal";
+import AwardModal from "../components/models/AwardsModal";
 
 function DataScreen() {
   const { for: dataFor } = useParams();
@@ -47,34 +65,46 @@ function DataScreen() {
 
   const getApiFn = {
     members: getMembers,
+    exectives: getExecs,
     programs: getPrograms,
     events: getEvents,
     news: getUpdates,
     gallery: getGallery,
+    achievements: getAchievements,
+    awards: getAwards
   }[dataFor];
 
   const createApiFn = {
     members: createMember,
+    exectives: createExec,
     programs: createProgram,
     events: createEvent,
     news: createUpdate,
     gallery: createGallery,
+    achievements: createAchievement,
+    awards: createAward
   }[dataFor];
 
   const updateApiFn = {
     members: updateMember,
+    exectives: updateExec,
     programs: updateProgram,
     events: updateEvent,
     news: updateUpdate,
     gallery: updateGallery,
+    achievements: updateAchievement,
+    awards: updateAward
   }[dataFor];
 
   const deleteApiFn = {
     members: deleteMember,
+    exectives: deleteExec,
     programs: deleteProgram,
     events: deleteEvent,
     news: deleteUpdate,
     gallery: deleteGallery,
+    achievements: deleteAchievement,
+    awards: deleteAward
   }[dataFor];
 
   const {
@@ -92,7 +122,6 @@ function DataScreen() {
     enabled: !!getApiFn,
   });
 
-  // 🔹 Trigger fetchNextPage when sentinel is visible
   useEffect(() => {
     if (!hasNextPage || isFetchingNextPage) return;
     const observer = new IntersectionObserver(
@@ -147,14 +176,16 @@ function DataScreen() {
       </div>
     );
 
-  if (error)
-    return (
-      <div className="text-center text-red-500 mt-6">
-        Failed to load {dataFor}: {error.message}
-      </div>
-    );
+  // if (error)
+  //   return (
+  //     <div className="text-center text-red-500 mt-6">
+  //       Failed to load {dataFor}: {error.message}
+  //     </div>
+  //   );
 
+  
   const allData = data?.pages.flatMap((p) => p.data) || [];
+  
 
   const renderCards = () => {
     const renderProps = {
@@ -168,6 +199,8 @@ function DataScreen() {
     switch (dataFor) {
       case "members":
         return allData.map((m) => <MemberCard key={m._id} member={m} {...renderProps} />);
+      case "exectives":
+        return allData.map((m) => <ExectivesCard key={m._id} member={m} {...renderProps} />);
       case "programs":
         return allData.map((p) => (
           <ProgramCard key={p._id} program={p} {...renderProps} expanded={expandedId === p._id} onToggle={() => toggleExpand(p._id)} />
@@ -183,6 +216,14 @@ function DataScreen() {
       case "gallery":
         return allData.map((g) => (
           <GalleryCard key={g._id} media={g} {...renderProps} expanded={expandedId === g._id} onToggle={() => toggleExpand(g._id)} />
+        ));
+      case "achievements":
+        return allData.map((g) => (
+          <AchievementCard key={g._id} achievement={g} {...renderProps} expanded={expandedId === g._id} onToggle={() => toggleExpand(g._id)} />
+        ));
+      case "awards":
+        return allData.map((g) => (
+          <AwardCard key={g._id} achievement={g} {...renderProps} expanded={expandedId === g._id} onToggle={() => toggleExpand(g._id)} />
         ));
       default:
         return null;
@@ -226,10 +267,13 @@ function DataScreen() {
       {showModal && (
         <>
           {dataFor === "members" && <MemberModel member={selectedItem} onClose={() => setShowModal(false)} onSubmit={handleCreate} />}
+          {dataFor === "exectives" && <ExectivesModal member={selectedItem} onClose={() => setShowModal(false)} onSubmit={handleCreate} />}
           {dataFor === "programs" && <ProgramModal program={selectedItem} onClose={() => setShowModal(false)} onSubmit={handleCreate} />}
           {dataFor === "events" && <EventModal event={selectedItem} onClose={() => setShowModal(false)} onSubmit={handleCreate} />}
           {dataFor === "news" && <NewsModal news={selectedItem} onClose={() => setShowModal(false)} onSubmit={handleCreate} />}
           {dataFor === "gallery" && <GalleryModal media={selectedItem} onClose={() => setShowModal(false)} onSubmit={handleCreate} />}
+          {dataFor === "achievements" && <AchievementModal media={selectedItem} onClose={() => setShowModal(false)} onSubmit={handleCreate} />}
+          {dataFor === "awards" && <AwardModal media={selectedItem} onClose={() => setShowModal(false)} onSubmit={handleCreate} />}
         </>
       )}
 

@@ -39,3 +39,11 @@ export const findAll = async (page = 1, limit = 30)=>{
         throw new Error(error)
     }
 }
+
+export const findById = async (id)=>{
+    try {
+        return await Gallery.findById(id); 
+    } catch (error) {
+        throw new Error(error)
+    }
+}

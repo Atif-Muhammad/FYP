@@ -22,10 +22,7 @@ function GalleryCard({ media, onUpdate, expanded, onToggle, onDelete }) {
           onClick={onToggle}
         >
           <img
-            src={
-              media.image?.base64
-                ? `data:${media.image.mimetype};base64,${media.image.base64}` : ""
-            }
+            src={media.image?.url}
             alt={media.title}
             className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
           />

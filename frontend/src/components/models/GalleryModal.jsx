@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
+import { X, Loader2, ImagePlus } from "lucide-react";
 import { motion } from "framer-motion";
-import { X, ImagePlus, Loader2 } from "lucide-react";
 
 function GalleryModal({ photo, onClose, onSubmit }) {
   const [formData, setFormData] = useState({
@@ -18,12 +18,12 @@ function GalleryModal({ photo, onClose, onSubmit }) {
       setFormData({
         title: photo.title || "",
         description: photo.description || "",
-        image: null,
+        image: null, // null means no new image yet
       });
       setPreview(
         photo.image?.base64
           ? `data:${photo.image.mimetype};base64,${photo.image.base64}`
-          : ""
+          : photo.image?.url || ""
       );
     }
   }, [photo]);
@@ -63,12 +63,19 @@ function GalleryModal({ photo, onClose, onSubmit }) {
     const data = new FormData();
     data.append("title", formData.title);
     data.append("description", formData.description);
-    if (formData.image instanceof File) data.append("image", formData.image);
+
+    // ✅ Handle image cases
+    if (formData.image instanceof File) {
+      data.append("image", formData.image);
+    } else if (photo?.image) {
+      // keep existing image
+      data.append("image", JSON.stringify(photo.image));
+    }
+
     if (photo?._id) data.append("_id", photo._id);
 
     await onSubmit(data);
     setLoading(false);
-    // onClose();
   };
 
   return (
@@ -80,7 +87,6 @@ function GalleryModal({ photo, onClose, onSubmit }) {
         transition={{ duration: 0.25, ease: "easeOut" }}
         className="bg-white rounded-2xl shadow-2xl w-full max-w-lg p-6 relative"
       >
-        {/* Close Button */}
         <button
           onClick={onClose}
           className="absolute top-3 right-3 text-gray-500 hover:text-gray-800"
@@ -88,12 +94,10 @@ function GalleryModal({ photo, onClose, onSubmit }) {
           <X size={22} />
         </button>
 
-        {/* Header */}
         <h2 className="text-2xl font-semibold mb-5 text-gray-800">
           {photo ? "Edit Photo" : "Add New Photo"}
         </h2>
 
-        {/* Form */}
         <form onSubmit={handleSubmit} className="space-y-5">
           {/* Title */}
           <input
@@ -154,14 +158,20 @@ function GalleryModal({ photo, onClose, onSubmit }) {
             />
           </div>
 
-          {/* Submit Button */}
+          {/* Submit */}
           <button
             type="submit"
             disabled={loading}
             className="w-full bg-[#101828] hover:bg-[#101828eb] text-white rounded-lg py-2.5 font-medium transition-colors flex items-center justify-center"
           >
             {loading && <Loader2 className="animate-spin mr-2" size={20} />}
-            {loading ? (photo ? "Updating..." : "Submitting...") : photo ? "Update Photo" : "Create Photo"}
+            {loading
+              ? photo
+                ? "Updating..."
+                : "Submitting..."
+              : photo
+              ? "Update Photo"
+              : "Create Photo"}
           </button>
         </form>
       </motion.div>

@@ -3,12 +3,15 @@ import dotenv from "dotenv"
 dotenv.config()
 import cors from "cors"
 import express from "express"
+import mongoose from "mongoose"
 import memberRouter from "./routes/member/index.js"
 import programRouter from "./routes/program/index.js"
 import eventRouter from "./routes/event/index.js"
 import galleryRouter from "./routes/gallery/index.js"
 import updatesRouter from "./routes/updates/index.js"
-import mongoose from "mongoose"
+import { homeController } from "./controllers/home.controller.js"
+import achieveRouter from "./routes/achieve/index.js"
+import awardRouter from "./routes/award/index.js"
 
 const allowed_origins = [
     "http://localhost:5173",
@@ -35,12 +38,18 @@ app.use(
 )
 
 
+app.get("/apis/home", homeController)
+
+
 app.use("/apis/members", memberRouter);
 app.use("/apis/dashboard", memberRouter)
 app.use("/apis/programs", programRouter);
 app.use("/apis/events", eventRouter);
 app.use("/apis/gallery", galleryRouter)
 app.use("/apis/updates", updatesRouter)
+app.use("/apis/achievements", achieveRouter)
+app.use("/apis/awards", awardRouter)
+
 
 app.get("/ping", (req, res)=>{
     res.send("pong");

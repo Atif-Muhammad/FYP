@@ -16,7 +16,7 @@ function ProgramCard({ program, expanded, onToggle, onUpdate, onDelete }) {
         >
           {program.image ? (
             <img
-              src={`data:${program.image.mimetype};base64,${program.image?.base64}`}
+              src={program.image.url}
               alt={program.title}
               className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
             />

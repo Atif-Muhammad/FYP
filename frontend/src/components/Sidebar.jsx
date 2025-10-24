@@ -4,10 +4,13 @@ function Sidebar() {
   const links = [
     { title: "Dashboard", url: "/" },
     { title: "Members", url: "/data/members" },
+    { title: "Exectives", url: "/data/exectives" },
     { title: "Programs", url: "/data/programs" },
     { title: "Events", url: "/data/events" },
     { title: "News & Updates", url: "/data/news" },
     { title: "Gallery", url: "/data/gallery" },
+    { title: "Achievements", url: "/data/achievements" },
+    { title: "Awards", url: "/data/awards" },
   ];
 
   return (

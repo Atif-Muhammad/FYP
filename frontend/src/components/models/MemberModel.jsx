@@ -26,8 +26,6 @@ function MemberModal({ member, onClose, onSubmit }) {
     phone: "",
     pk: "",
     district: "",
-    role: "member",
-    socials: { fb: "", insta: "", twitter: "" },
     image: null,
   });
   const [preview, setPreview] = useState("");
@@ -39,10 +37,9 @@ function MemberModal({ member, onClose, onSubmit }) {
       setFormData({
         ...member,
         DOB: member.DOB ? new Date(member.DOB).toISOString().split("T")[0] : "",
-        socials: member.socials || { fb: "", insta: "", twitter: "" },
         image: member.image,
       });
-      setPreview(`data:${member.image.mimetype};base64,${member.image.base64}` || "");
+      setPreview(member.image.url);
     }
   }, [member]);
 
@@ -90,40 +87,61 @@ function MemberModal({ member, onClose, onSubmit }) {
     fileInputRef.current?.click();
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     const data = new FormData();
-    const normalizedData = { ...formData, DOB: formData.DOB ? new Date(formData.DOB).toISOString() : "" };
+    const normalizedData = {
+      ...formData,
+      DOB: formData.DOB ? new Date(formData.DOB).toISOString() : "",
+    };
 
     for (const key in normalizedData) {
-      if (key === "socials") {
-        for (const socialKey in normalizedData.socials) {
-          data.append(`socials[${socialKey}]`, normalizedData.socials[socialKey]);
-        }
-      } else if (key === "image" && normalizedData.image instanceof File) {
-        data.append("image", normalizedData.image);
+       if (key === "image" && normalizedData.image instanceof File) {
+        data.append("image", normalizedData.image); // new upload
+      } else if (key === "image" && typeof normalizedData.image === "object") {
+        data.append("image", JSON.stringify(normalizedData.image)); // existing image object
       } else {
         data.append(key, normalizedData[key]);
       }
     }
 
-    onSubmit(data);
+    await onSubmit(data);
   };
 
   const fields = [
     { label: "Name", name: "name", type: "text", icon: <User size={18} /> },
-    { label: "Father Name", name: "father_name", type: "text", icon: <UserCircle2 size={18} /> },
+    {
+      label: "Father Name",
+      name: "father_name",
+      type: "text",
+      icon: <UserCircle2 size={18} />,
+    },
     { label: "CNIC", name: "CNIC", type: "text", icon: <IdCard size={18} /> },
-    { label: "Date of Birth", name: "DOB", type: "date", icon: <Calendar size={18} /> },
-    { label: "District", name: "district", type: "text", icon: <Pin size={18} /> },
+    {
+      label: "Date of Birth",
+      name: "DOB",
+      type: "date",
+      icon: <Calendar size={18} />,
+    },
+    {
+      label: "District",
+      name: "district",
+      type: "text",
+      icon: <Pin size={18} />,
+    },
     { label: "PK", name: "pk", type: "text", icon: "PK-" },
     { label: "Email", name: "email", type: "email", icon: <Mail size={18} /> },
     { label: "Phone", name: "phone", type: "text", icon: <Phone size={18} /> },
-    { label: "About", name: "about", type: "textArea", icon: <UserRoundPen size={18} /> },
+    {
+      label: "About",
+      name: "about",
+      type: "textArea",
+      icon: <UserRoundPen size={18} />,
+    },
   ];
 
-  const highRoles = ["president", "vice president", "general secretary"];
-  const isHighRole = highRoles.includes(formData.role?.toLowerCase());
+  const highRoles = ["President", "Vice President", "General Secretary"];
+  const isHighRole = highRoles.includes(formData.role);
 
   return (
     <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center z-50 overflow-hidden">
@@ -136,25 +154,10 @@ function MemberModal({ member, onClose, onSubmit }) {
           {member ? "Edit Member" : "Add New Member"}
         </h2>
 
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-5">
-          {/* Role */}
-          <div className="md:col-span-2">
-            <label className="block text-sm font-medium text-gray-600 mb-1">Role</label>
-            <div className="relative">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500"><Medal size={18} /></span>
-              <select
-                name="role"
-                value={formData.role}
-                onChange={handleChange}
-                className="w-full border border-gray-300 rounded-md pl-10 pr-3 py-2 bg-white focus:outline-none focus:ring-2 focus:ring-blue-500"
-              >
-                <option value="member">Member</option>
-                <option value="vice president">Vice President</option>
-                <option value="president">President</option>
-                <option value="general secretary">General Secretary</option>
-              </select>
-            </div>
-          </div>
+        <form
+          onSubmit={handleSubmit}
+          className="grid grid-cols-1 md:grid-cols-2 gap-5"
+        >
 
           {/* Image Upload / Drag & Drop */}
           <div
@@ -171,7 +174,11 @@ function MemberModal({ member, onClose, onSubmit }) {
             </label>
             <div className="relative w-32 h-32 rounded-full overflow-hidden border border-gray-300 cursor-pointer">
               {preview ? (
-                <img src={preview} alt="Preview" className="w-full h-full object-cover" />
+                <img
+                  src={preview}
+                  alt="Preview"
+                  className="w-full h-full object-cover"
+                />
               ) : (
                 <div className="w-full h-full flex items-center justify-center bg-gray-100">
                   <User size={40} className="text-gray-400" />
@@ -185,15 +192,21 @@ function MemberModal({ member, onClose, onSubmit }) {
               onChange={(e) => handleImageChange(e.target.files[0])}
               className="hidden"
             />
-            <p className="text-xs text-gray-500 mt-2">Drag & drop an image or click to select</p>
+            <p className="text-xs text-gray-500 mt-2">
+              Drag & drop an image or click to select
+            </p>
           </div>
 
           {/* Fields */}
           {fields.map((field) => (
             <div key={field.name}>
-              <label className="block text-sm font-medium text-gray-600 mb-1">{field.label}</label>
+              <label className="block text-sm font-medium text-gray-600 mb-1">
+                {field.label}
+              </label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">{field.icon}</span>
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                  {field.icon}
+                </span>
                 {field.type === "textArea" ? (
                   <textarea
                     name={field.name}
@@ -211,45 +224,35 @@ function MemberModal({ member, onClose, onSubmit }) {
                   />
                 )}
               </div>
-              {field.name === "phone" && <p className="text-xs text-gray-500 mt-1">Max 11 digits (e.g., 03001234567)</p>}
-              {field.name === "CNIC" && <p className="text-xs text-gray-500 mt-1">13 digits without dashes (e.g., 3520212345671)</p>}
+              {field.name === "phone" && (
+                <p className="text-xs text-gray-500 mt-1">
+                  Max 11 digits (e.g., 03001234567)
+                </p>
+              )}
+              {field.name === "CNIC" && (
+                <p className="text-xs text-gray-500 mt-1">
+                  13 digits without dashes (e.g., 3520212345671)
+                </p>
+              )}
             </div>
           ))}
 
-          {/* Socials */}
-          <div className="md:col-span-2 border-t pt-4 mt-2">
-            <h3 className="font-semibold text-gray-800 mb-2 flex items-center gap-2"><Globe size={18} /> Social Links</h3>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              {[
-                { label: "Facebook", name: "fb", icon: <Globe size={16} /> },
-                { label: "Instagram", name: "insta", icon: <Instagram size={16} /> },
-                { label: "Twitter / X", name: "twitter", icon: <Twitter size={16} /> },
-              ].map((social) => (
-                <div key={social.name}>
-                  <label className="block text-sm font-medium text-gray-600 mb-1">{social.label}</label>
-                  <div className="relative">
-                    <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">{social.icon}</span>
-                    <input
-                      type="url"
-                      name={social.name}
-                      value={formData.socials[social.name] || ""}
-                      onChange={handleSocialChange}
-                      disabled={!isHighRole}
-                      placeholder={isHighRole ? `https://${social.name}.com/...` : "Disabled for Members"}
-                      className={`w-full border rounded-md pl-10 pr-3 py-2 focus:outline-none focus:ring-2 ${
-                        isHighRole ? "border-gray-300 focus:ring-blue-500" : "bg-gray-100 border-gray-200 cursor-not-allowed text-gray-400"
-                      }`}
-                    />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
 
           {/* Buttons */}
           <div className="md:col-span-2 flex justify-end gap-3 pt-4">
-            <button type="button" onClick={onClose} className="px-5 py-2 rounded-md bg-gray-200 hover:bg-gray-300 transition">Cancel</button>
-            <button type="submit" className="px-5 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition">{member ? "Update" : "Create"}</button>
+            <button
+              type="button"
+              onClick={onClose}
+              className="px-5 py-2 rounded-md bg-gray-200 hover:bg-gray-300 transition"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className="px-5 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition"
+            >
+              {member ? "Update" : "Create"}
+            </button>
           </div>
         </form>
       </motion.div>

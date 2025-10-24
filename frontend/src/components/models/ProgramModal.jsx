@@ -10,7 +10,6 @@ function ProgramModal({ program, onClose, onSubmit }) {
   const [preview, setPreview] = useState("");
   const [loading, setLoading] = useState(false);
   const [dragActive, setDragActive] = useState(false);
-
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -18,12 +17,12 @@ function ProgramModal({ program, onClose, onSubmit }) {
       setFormData({
         title: program.title || "",
         description: program.description || "",
-        image: null,
+        image: program.image || null, // existing image object
       });
       setPreview(
         program.image?.base64
           ? `data:${program.image.mimetype};base64,${program.image.base64}`
-          : program.imageUrl || ""
+          : program.image?.url || ""
       );
     }
   }, [program]);
@@ -33,10 +32,10 @@ function ProgramModal({ program, onClose, onSubmit }) {
 
     if (name === "image" && files?.length > 0) {
       const file = files[0];
-      setFormData({ ...formData, image: file });
+      setFormData((prev) => ({ ...prev, image: file }));
       setPreview(URL.createObjectURL(file));
     } else {
-      setFormData({ ...formData, [name]: value });
+      setFormData((prev) => ({ ...prev, [name]: value }));
     }
   };
 
@@ -45,7 +44,7 @@ function ProgramModal({ program, onClose, onSubmit }) {
     setDragActive(false);
     const file = e.dataTransfer.files?.[0];
     if (file && file.type.startsWith("image/")) {
-      setFormData({ ...formData, image: file });
+      setFormData((prev) => ({ ...prev, image: file }));
       setPreview(URL.createObjectURL(file));
     }
   };
@@ -53,11 +52,8 @@ function ProgramModal({ program, onClose, onSubmit }) {
   const handleDrag = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    if (e.type === "dragenter" || e.type === "dragover") {
-      setDragActive(true);
-    } else if (e.type === "dragleave") {
-      setDragActive(false);
-    }
+    if (["dragenter", "dragover"].includes(e.type)) setDragActive(true);
+    else if (e.type === "dragleave") setDragActive(false);
   };
 
   const handleSubmit = async (e) => {
@@ -67,8 +63,14 @@ function ProgramModal({ program, onClose, onSubmit }) {
     const data = new FormData();
     data.append("title", formData.title);
     data.append("description", formData.description);
-    if (formData.image instanceof File) data.append("image", formData.image);
     if (program) data.append("_id", program._id);
+
+    // ⬇️ Send either a new image file OR the existing image object
+    if (formData.image instanceof File) {
+      data.append("image", formData.image);
+    } else if (formData.image && typeof formData.image === "object") {
+      data.append("image", JSON.stringify(formData.image));
+    }
 
     await onSubmit(data);
     setLoading(false);
@@ -89,7 +91,6 @@ function ProgramModal({ program, onClose, onSubmit }) {
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-5">
-          {/* Title */}
           <input
             type="text"
             name="title"
@@ -100,7 +101,6 @@ function ProgramModal({ program, onClose, onSubmit }) {
             required
           />
 
-          {/* Description */}
           <textarea
             name="description"
             value={formData.description}
@@ -110,7 +110,7 @@ function ProgramModal({ program, onClose, onSubmit }) {
             className="w-full border rounded-lg px-3 py-2 text-base focus:ring-2 focus:ring-blue-500 outline-none resize-none"
           />
 
-          {/* Image Upload (Drag & Drop) */}
+          {/* Image Upload */}
           <div
             onDragEnter={handleDrag}
             onDragOver={handleDrag}
@@ -147,15 +147,12 @@ function ProgramModal({ program, onClose, onSubmit }) {
             />
           </div>
 
-          {/* Submit Button */}
           <button
             type="submit"
             disabled={loading}
             className="w-full bg-[#101828] hover:bg-[#101828eb] text-white rounded-lg py-2.5 font-medium transition-colors flex items-center justify-center"
           >
-            {loading ? (
-              <Loader2 className="animate-spin mr-2" size={20} />
-            ) : null}
+            {loading ? <Loader2 className="animate-spin mr-2" size={20} /> : null}
             {loading
               ? "Submitting..."
               : program

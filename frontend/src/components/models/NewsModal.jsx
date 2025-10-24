@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from "react";
-import { X, Loader2, ImagePlus } from "lucide-react";
+import { X, Loader2, ImagePlus, Trash2 } from "lucide-react";
 
 function NewsModal({ update, onClose, onSubmit }) {
   const [formData, setFormData] = useState({
     title: "",
     description: "",
     validity: "",
-    image: null,
+    image: null, // File or existing object
   });
   const [preview, setPreview] = useState("");
   const [loading, setLoading] = useState(false);
@@ -22,22 +22,24 @@ function NewsModal({ update, onClose, onSubmit }) {
     "Until I change",
   ];
 
+  // 🟡 Preload existing data when editing
   useEffect(() => {
     if (update) {
       setFormData({
         title: update.title || "",
         description: update.description || "",
         validity: update.validity || "",
-        image: null,
+        image: update.image || null,
       });
-      setPreview(
-        update.image?.base64
-          ? `data:${update.image.mimetype};base64,${update.image.base64}`
-          : update.imageUrl || ""
-      );
+
+      // Support both Cloudinary & base64
+      if (update.image?.url) setPreview(update.image.url);
+     
+      else setPreview("");
     }
   }, [update]);
 
+  // 🟢 Handle input change
   const handleChange = (e) => {
     const { name, value, files } = e.target;
     if (name === "image" && files?.length > 0) {
@@ -49,10 +51,11 @@ function NewsModal({ update, onClose, onSubmit }) {
     }
   };
 
+  // 🟢 Drag-and-drop
   const handleDrag = (e) => {
     e.preventDefault();
     e.stopPropagation();
-    if (e.type === "dragenter" || e.type === "dragover") setDragActive(true);
+    if (["dragenter", "dragover"].includes(e.type)) setDragActive(true);
     else if (e.type === "dragleave") setDragActive(false);
   };
 
@@ -66,6 +69,13 @@ function NewsModal({ update, onClose, onSubmit }) {
     }
   };
 
+  // 🧹 Remove image manually
+  const handleRemoveImage = () => {
+    setFormData({ ...formData, image: null });
+    setPreview("");
+  };
+
+  // 🟢 Submit form
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -74,8 +84,17 @@ function NewsModal({ update, onClose, onSubmit }) {
     data.append("title", formData.title);
     data.append("description", formData.description);
     data.append("validity", formData.validity);
-    if (formData.image instanceof File) data.append("image", formData.image);
     if (update) data.append("_id", update._id);
+
+    // 🔸 Image logic — consistent with backend
+    if (formData.image instanceof File) {
+      // New file uploaded
+      data.append("image", formData.image);
+    } else if (formData.image && typeof formData.image === "object") {
+      // Keep existing image (Cloudinary or base64 object)
+      data.append("image", JSON.stringify(formData.image));
+    }
+    // else no image => remove
 
     await onSubmit(data);
     setLoading(false);
@@ -136,25 +155,36 @@ function NewsModal({ update, onClose, onSubmit }) {
             ))}
           </select>
 
-          {/* Image Upload (Drag & Drop) */}
+          {/* Image Upload / Preview */}
           <div
             onDragEnter={handleDrag}
             onDragOver={handleDrag}
             onDragLeave={handleDrag}
             onDrop={handleDrop}
-            className={`relative flex flex-col items-center justify-center w-full border-2 border-dashed rounded-xl p-6 transition-colors cursor-pointer ${
-              dragActive
+            className={`relative flex flex-col items-center justify-center w-full border-2 border-dashed rounded-xl p-6 transition-colors cursor-pointer ${dragActive
                 ? "border-blue-500 bg-blue-50"
                 : "border-gray-300 hover:border-blue-400"
-            }`}
+              }`}
             onClick={() => fileInputRef.current.click()}
           >
             {preview ? (
-              <img
-                src={preview}
-                alt="Preview"
-                className="w-40 h-40 object-cover rounded-lg border"
-              />
+              <div className="relative">
+                <img
+                  src={preview}
+                  alt="Preview"
+                  className="w-40 h-40 object-cover rounded-lg border"
+                />
+                <button
+                  type="button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleRemoveImage();
+                  }}
+                  className="absolute top-2 right-2 bg-white/80 p-1 rounded-full hover:bg-red-500 hover:text-white"
+                >
+                  <Trash2 size={16} />
+                </button>
+              </div>
             ) : (
               <div className="flex flex-col items-center text-gray-500">
                 <ImagePlus size={40} className="mb-2" />
@@ -183,8 +213,8 @@ function NewsModal({ update, onClose, onSubmit }) {
             {loading
               ? "Submitting..."
               : update
-              ? "Update Record"
-              : "Create Record"}
+                ? "Update Record"
+                : "Create Record"}
           </button>
         </form>
       </div>

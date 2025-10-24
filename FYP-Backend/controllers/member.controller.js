@@ -1,8 +1,9 @@
+import { uploadFile, removeFile } from "../services/cloudinary.service.js";
 import {
   addMemberService,
   deleteMemberService,
   findAll,
-  topMembers,
+  findById,
   updateMemberService,
 } from "../services/member.service.js";
 
@@ -10,7 +11,6 @@ import {
 export const addMember = async (req, res) => {
   try {
     const {
-      role,
       name,
       father_name,
       about,
@@ -20,31 +20,26 @@ export const addMember = async (req, res) => {
       DOB,
       phone,
       email,
-      socials,
     } = req.body;
 
-    if (!role || !name || !father_name || !CNIC)
+    if (!name || !father_name || !CNIC)
       return res.status(400).send("Missing Field(s)");
     if (!req.file)
       return res.status(400).send("Must provide an image of member");
-    const { originalname, mimetype, buffer } = req.file;
+    // add to cloudinary
+    const url = await uploadFile(req.file)
+
     const payload = {
       name,
       father_name,
-      role,
       about,
       CNIC,
       pk,
       district,
       DOB,
       phone,
-      socials,
       email,
-      image: {
-        originalname,
-        mimetype,
-        base64: buffer.toString("base64"),
-      },
+      image: url,
     };
 
     const newMember = await addMemberService(payload);
@@ -58,11 +53,11 @@ export const addMember = async (req, res) => {
   }
 };
 
+
 export const updateMember = async (req, res) => {
   try {
     const {
       _id,
-      role,
       name,
       father_name,
       about,
@@ -72,25 +67,46 @@ export const updateMember = async (req, res) => {
       DOB,
       phone,
       email,
-      socials,
     } = req.body;
-    // console.log(req.body)
-    if (!role || !name || !father_name || !CNIC || !_id)
-      return res.status(400).send("Missing Field");
-    
-    const image = req.file
-      ? {
-          originalname: req.file.originalname,
-          mimetype: req.file.mimetype,
-          base64: req.file.buffer.toString("base64"),
-        }
-      : undefined;
+
+    if (!name || !father_name || !CNIC || !_id)
+      return res.status(400).send("Missing required field");
+
+
+    const member = await findById(_id)
+    if (!member) return res.status(404).send("Member not found");
+
+    let finalImage = member.image;
+
+    // Case 1: New image uploaded → replace old one
+    if (req.file) {
+      if (member.image?.public_id) {
+        await removeFile(member.image.public_id);
+      }
+      const uploaded = await uploadFile(req.file);
+      finalImage = uploaded;
+    }
+
+    // Case 2: No new file, but existing image sent in body → keep that
+    else if (req.body.image) {
+      try {
+        const parsed = JSON.parse(req.body.image);
+        finalImage = parsed; // use existing
+      } catch {
+        finalImage = req.body.image; // in case frontend already sends as stringified object
+      }
+    }
+
+    // Case 3: No image in file or body → remove image
+    else if (!req.file && !req.body.image && member.image?.public_id) {
+      await removeFile(member.image.public_id);
+      finalImage = undefined;
+    }
 
     const payload = {
       _id,
       name,
       father_name,
-      role,
       about,
       CNIC,
       pk,
@@ -98,19 +114,19 @@ export const updateMember = async (req, res) => {
       DOB,
       phone,
       email,
-      socials: socials,
+      image: finalImage,
     };
-    if (image) payload.image = image;
+
     const updatedMember = await updateMemberService(payload);
-    if (!updatedMember) {
-      return res.status(500).send("Unexpected error");
-    }
+    if (!updatedMember) return res.status(500).send("Unexpected error during update");
 
     res.status(200).json({ success: true, data: updatedMember });
   } catch (error) {
+    console.error("Error updating member:", error);
     res.status(500).json({ cause: error.message });
   }
 };
+
 
 export const deleteMember = async (req, res) => {
   try {
@@ -130,15 +146,12 @@ export const allMembers = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = 30;
-
-    const top = await topMembers();
     const { members, total, pages } = await findAll(page, limit);
 
-    const data = page === 1 ? [...top, ...members] : members;
 
     res.status(200).json({
       success: true,
-      data,
+      data: members,
       page,
       pages,
       total,

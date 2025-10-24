@@ -20,7 +20,7 @@ function NewsCard({ news, onUpdate, expanded, onToggle, onDelete }) {
         {/* 🖼️ Image Section */}
         <div className="relative w-full h-56 overflow-hidden">
           <img
-            src={`data:${news.image.mimetype};base64,${news.image?.base64}`}
+            src={news.image?.url}
             alt={news.title}
             className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
           />

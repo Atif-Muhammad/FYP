@@ -1,25 +1,16 @@
 import mongoose from "mongoose";
 
 const memberSchema = mongoose.Schema({
-  role: {
-    type: String,
-    enum: ["member", "vice president", "president", "general secretary"],
-    require: true,
-  },
   name: {
     type: String,
     require: true,
   },
   image: {
-    originalname: {
+    url: {
       type: String,
       require: true,
     },
-    mimetype: {
-      type: String,
-      require: true,
-    },
-    base64: {
+    public_id: {
       type: String,
       require: true,
     },
@@ -50,11 +41,6 @@ const memberSchema = mongoose.Schema({
   },
   email:{
     type: String
-  },
-  socials: {
-    fb: String,
-    insta: String,
-    twitter: String
   }
 }, {timestamps: true});
 

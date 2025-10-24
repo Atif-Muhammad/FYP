@@ -10,20 +10,16 @@ const programSchema = mongoose.Schema({
     require: true,
   },
   image: {
-    originalname: {
+    url: {
       type: String,
       require: true,
     },
-    mimetype: {
-      type: String,
-      require: true,
-    },
-    base64: {
+    public_id: {
       type: String,
       require: true,
     },
   },
-}, {timestamps: true});
+}, { timestamps: true });
 
-programSchema.index({createdAt:-1});
+programSchema.index({ createdAt: -1 });
 export default mongoose.model("Program", programSchema);
