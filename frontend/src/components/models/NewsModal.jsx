@@ -85,6 +85,14 @@ function NewsModal({ update, onClose, onSubmit }) {
     data.append("description", formData.description);
     data.append("validity", formData.validity);
     if (update) data.append("_id", update._id);
+    // 🔸 Image logic — consistent with backend
+    if (formData.image instanceof File) {
+      // New file uploaded
+      data.append("image", formData.image);
+    } else if (formData.image && typeof formData.image === "object") {
+      // Keep existing image (Cloudinary or base64 object)
+      data.append("image", JSON.stringify(formData.image));
+    }
 
     await onSubmit(data);
     setLoading(prev=>!prev);
