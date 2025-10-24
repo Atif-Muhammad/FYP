@@ -4,6 +4,7 @@ import Member from "../models/memberModel.js";
 import Event from "../models/eventModel.js";
 import Gallery from "../models/galleryModel.js";
 import Update from "../models/updatesModel.js";
+import Exective from "../models/exectiveModel.js"
 
 
 export const topPrograms = async () => {
@@ -19,8 +20,8 @@ export const topPrograms = async () => {
 
 export const execMembers = async () => {
   try {
-    return await Member.find(
-      { role: { $in: ["President", "Vice President", "Secretary"] } },
+    return await Exective.find(
+      { role: { $in: ["Chairman", "Vice President", "General Secretary"] } },
       { name: 1, role: 1, image: 1, about: 1, socials: 1, _id: 1 }
     )
       .sort({ role: 1 })

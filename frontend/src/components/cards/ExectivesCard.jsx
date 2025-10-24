@@ -9,6 +9,7 @@ import ExectivesModal from "../models/ExectivesModal";
 function ExectivesCard({ member, onUpdate, onDelete }) {
   const [expanded, setExpanded] = useState(false);
   const [showModal, setShowModal] = useState(false);
+  console.log(member)
 
   return (
     <>
@@ -21,7 +22,7 @@ function ExectivesCard({ member, onUpdate, onDelete }) {
             className="flex items-center gap-4 cursor-pointer flex-1"
           >
             <div className="bg-blue-100 w-12 h-12 rounded-full overflow-hidden object-fit">
-              {member.image.url ? <img src={member.image.url} alt={member.name} />
+              {member.image?.url ? <img src={member.image?.url} alt={member.name} />
                 : <User className="w-6 h-6 text-blue-700" />}
             </div>
             <div>

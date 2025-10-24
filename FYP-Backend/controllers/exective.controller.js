@@ -8,11 +8,11 @@ export const createExective = async (req, res) => {
         // console.log(req.body)
         const { name, role, about, district, livingIn, message } = req.body;
         if (!name || !role) return res.status(400).send("Missing Field(s)");
-       
+
         if (!req.file)
             return res.status(400).send("Must provide an image of member");
         const url = await uploadFile(req.file);
-       
+
         const payload = {
             name, role, about, district, livingIn, message, image: url, socials: JSON.parse(req.body.socials)
         }
@@ -27,7 +27,7 @@ export const createExective = async (req, res) => {
 export const updateExective = async (req, res) => {
     try {
         const { _id, name, role, about, district, livingIn, message, socials } = req.body;
-       
+
         if (!name || !role || !_id)
             return res.status(400).send("Missing required field");
 
@@ -104,7 +104,7 @@ export const deleteExective = async (req, res) => {
 export const allExecs = async (req, res) => {
     try {
         const execs = await findAll();
-        if(execs?.length === 0) return res.status(200).json({success: false, data: []})
+        if (execs?.length === 0) return res.status(200).json({ success: false, data: [] })
         res.status(200).json({
             success: true,
             data: execs
@@ -113,3 +113,35 @@ export const allExecs = async (req, res) => {
         res.status(500).json({ cause: error.message })
     }
 }
+export const allExecsClient = async (req, res) => {
+    try {
+        const execs = await findAll();
+        if (!execs || execs.length === 0)
+            return res.status(200).json({ success: false, data: [] });
+
+        const grouped = {
+            main: execs.filter((e) =>
+                ["General Secretary", "Vice President", "Chairman"].includes(e.role)
+            ),
+            patron: execs.filter((e) => ["Patron in Chief"].includes(e.role)),
+            advisors: execs.filter((e) =>
+                ["Legal Advisor",
+                    "Technical Advisor",
+                    "Political Advisor",
+                    "Finance Advisor"].includes(e.role)
+            ),
+            others: execs.filter((e) =>
+                ["Chief Election Officer", "Youth Governor"].includes(e.role)
+            ),
+        };
+
+        res.status(200).json({
+            success: true,
+            data: grouped,
+        });
+    } catch (error) {
+        res.status(500).json({ cause: error.message });
+    }
+}
+
+
