@@ -56,7 +56,7 @@ app.get("/ping", (req, res)=>{
 })
 
 const port = process.env.PORT;
-const mongo_url = process.env.MONGO_URL || 3001
+const mongo_url = process.env.MONGO_URL
 
 mongoose.connect(mongo_url).then(res=>{
     app.listen(port, '0.0.0.0',()=>{
