@@ -33,11 +33,11 @@ function AchievementCard({ achievement, onUpdate, onDelete }) {
               <p className="font-semibold text-gray-800">
                 {achievement?.title}
               </p>
-              <p className="text-sm text-gray-500">
+              {/* <p className="text-sm text-gray-500">
                 {achievement?.description?.length > 50
                   ? achievement?.description.slice(0, 50) + "..."
                   : achievement?.description}
-              </p>
+              </p> */}
             </div>
           </div>
 
