@@ -155,14 +155,19 @@ export const updateExec = async (data) => {
         throw new Error(error);
     }
 }
-export const deleteExec = async (MemberID) => {
+export const deleteExec = async (execID) => {
     try {
-        const response = await axios.delete(`${base_url}/members/admin/deleteExec?memberID=${MemberID}`, { withCredentials: true });
+        const response = await axios.delete(
+            `${base_url}/members/deleteExec`,
+            { params: { execID }, withCredentials: true }
+        );
         return response;
     } catch (error) {
         throw new Error(error);
     }
-}
+};
+
+
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 export const createProgram = async (data) => {

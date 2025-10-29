@@ -327,14 +327,14 @@ function ExecutivesModal({ member, onClose, onSubmit }) {
             <button
               type="button"
               onClick={onClose}
-              disabled={loading} // ✅ disable during submit
+              disabled={loading}
               className="px-5 py-2 rounded-md bg-gray-200 hover:bg-gray-300 transition disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               type="submit"
-              disabled={loading} // ✅ disable during submit
+              disabled={loading}
               className="px-5 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition disabled:opacity-50"
             >
               {loading
