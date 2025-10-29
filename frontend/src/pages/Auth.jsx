@@ -1,18 +1,21 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Mail, Lock, Loader } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { signin } from "../../config/apis";
 
 function Auth() {
+  const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  
+
 
   const { mutate, isPending } = useMutation({
     mutationFn: () => signin({ email, password }),
     onSuccess: (data) => {
+      navigate("/");
       console.log("Signed in:", data);
-    
+
     },
     onError: (err) => {
       console.error("Sign in failed:", err);
