@@ -10,14 +10,15 @@ function ProgramCard({ program, expanded, onToggle, onUpdate, onDelete }) {
     <>
       <div className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden w-full sm:max-w-xl mx-auto">
         
+        {/* Image Section */}
         <div
           className="relative w-full h-48 sm:h-56 cursor-pointer overflow-hidden rounded-t-2xl flex items-center justify-center bg-blue-50"
           onClick={onToggle}
         >
-          {program.image ? (
+          {program.image?.url ? (
             <img
               src={program.image.url}
-              alt={program.title}
+              alt={program.title || "Program"}
               className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
             />
           ) : (
@@ -27,19 +28,28 @@ function ProgramCard({ program, expanded, onToggle, onUpdate, onDelete }) {
           {/* Admin Buttons */}
           <div className="absolute top-2 right-2 flex gap-2 z-10">
             <button
-              onClick={(e) => { e.stopPropagation(); setShowModal(true); }}
+              onClick={(e) => {
+                e.stopPropagation();
+                setShowModal(true);
+              }}
               className="p-2 rounded-full bg-white/80 hover:bg-white shadow"
             >
               <Pencil size={16} className="text-blue-600" />
             </button>
             <button
-              onClick={(e) => { e.stopPropagation(); onDelete(program); }}
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(program);
+              }}
               className="p-2 rounded-full bg-white/80 hover:bg-white shadow"
             >
               <Trash2 size={16} className="text-red-600" />
             </button>
             <button
-              onClick={(e) => { e.stopPropagation(); onToggle(); }}
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggle();
+              }}
               className="p-2 rounded-full bg-white/80 hover:bg-white shadow"
             >
               {expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
@@ -49,8 +59,11 @@ function ProgramCard({ program, expanded, onToggle, onUpdate, onDelete }) {
 
         {/* Program Info */}
         <div className="p-4 sm:p-5">
-          <h3 className="text-lg sm:text-xl font-bold text-gray-900 break-words">
-            {program.title}
+          <h3
+            className="text-lg sm:text-xl font-bold text-gray-900 truncate"
+            title={program.title}
+          >
+            {program.title?.length ? program.title : "Untitled Program"}
           </h3>
         </div>
 
@@ -64,8 +77,19 @@ function ProgramCard({ program, expanded, onToggle, onUpdate, onDelete }) {
               transition={{ duration: 0.3 }}
               className="px-4 sm:px-5 pb-4 border-t border-gray-200 bg-gray-50"
             >
-              <p className="text-gray-700 text-sm sm:text-base break-words whitespace-normal">
-                {program.description || "No description available."}
+              <p
+                className="text-gray-700 text-sm sm:text-base break-words whitespace-pre-wrap overflow-hidden"
+                style={{
+                  wordBreak: "break-word",
+                  overflowWrap: "anywhere",
+                  textOverflow: "ellipsis",
+                  display: "-webkit-box",
+                  WebkitLineClamp: 6, // limits text to 6 lines
+                  WebkitBoxOrient: "vertical",
+                }}
+                title={program.description}
+              >
+                {program.description?.trim() || "No description available."}
               </p>
             </motion.div>
           )}

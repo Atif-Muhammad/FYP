@@ -10,9 +10,10 @@ import {
   Mail,
   Phone,
   UserCircle2,
+  AlertCircle
 } from "lucide-react";
 
-function MemberModal({ member, onClose, onSubmit }) {
+function MemberModal({ member, onClose, onSubmit, loading }) {
   const [formData, setFormData] = useState({
     name: "",
     father_name: "",
@@ -27,7 +28,7 @@ function MemberModal({ member, onClose, onSubmit }) {
 
   const [preview, setPreview] = useState("");
   const [isDragging, setIsDragging] = useState(false);
-  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(""); // ⬅️ error state
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -60,7 +61,7 @@ function MemberModal({ member, onClose, onSubmit }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (loading) return;
-    setLoading(true);
+    setError("");
 
     try {
       const data = new FormData();
@@ -83,10 +84,13 @@ function MemberModal({ member, onClose, onSubmit }) {
         }
       }
 
-      await onSubmit(data);
-    } finally {
-      setLoading(false);
-    }
+      await onSubmit(data); 
+      onClose(); 
+      // console.log(loading)
+    } catch (err) {
+      console.error(err);
+      setError(err?.response?.data?.message || "Something went wrong. Please try again.");
+    } 
   };
 
   const fields = [
@@ -108,12 +112,20 @@ function MemberModal({ member, onClose, onSubmit }) {
         animate={{ scale: 1, opacity: 1 }}
         className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-4xl max-h-[90vh] overflow-y-auto"
       >
-        <h2 className="text-2xl font-semibold mb-6 text-gray-800">
+        <h2 className="text-2xl font-semibold mb-4 text-gray-800">
           {member ? "Edit Member" : "Add New Member"}
         </h2>
 
-        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-5">
+        {/* ⬇️ Error message */}
+        {error && (
+          <div className="mb-4 p-3 bg-red-50 border border-red-400 text-red-600 rounded-md flex items-center gap-2">
+            <AlertCircle size={18} />
+            <span>{error}</span>
+          </div>
+        )}
 
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 md:grid-cols-2 gap-5">
+          {/* Image Upload */}
           <div
             className={`md:col-span-2 flex flex-col items-center border border-dashed rounded-xl p-4 transition ${isDragging ? "border-blue-500 bg-blue-50" : "border-gray-300"}`}
             onClick={handleFileSelect}
@@ -131,14 +143,25 @@ function MemberModal({ member, onClose, onSubmit }) {
                 </div>
               )}
             </div>
-            <input type="file" accept="image/*" ref={fileInputRef} onChange={(e) => handleImageChange(e.target.files[0])} className="hidden" />
+            <input
+              type="file"
+              accept="image/*"
+              ref={fileInputRef}
+              onChange={(e) => handleImageChange(e.target.files[0])}
+              className="hidden"
+            />
           </div>
 
+          {/* Input Fields */}
           {fields.map((field) => (
             <div key={field.name}>
-              <label className="block text-sm font-medium text-gray-600 mb-1">{field.label}</label>
+              <label className="block text-sm font-medium text-gray-600 mb-1">
+                {field.label}
+              </label>
               <div className="relative">
-                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">{field.icon}</span>
+                <span className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-500">
+                  {field.icon}
+                </span>
 
                 {field.type === "textArea" ? (
                   <textarea
@@ -159,14 +182,19 @@ function MemberModal({ member, onClose, onSubmit }) {
               </div>
 
               {field.name === "phone" && (
-                <p className="text-xs text-gray-500 mt-1">Max 11 digits (03001234567)</p>
+                <p className="text-xs text-gray-500 mt-1">
+                  Max 11 digits (03001234567)
+                </p>
               )}
               {field.name === "CNIC" && (
-                <p className="text-xs text-gray-500 mt-1">13 digits without dashes (3520212345671)</p>
+                <p className="text-xs text-gray-500 mt-1">
+                  13 digits without dashes (3520212345671)
+                </p>
               )}
             </div>
           ))}
 
+          {/* Buttons */}
           <div className="md:col-span-2 flex justify-end gap-3 pt-4">
             <button
               type="button"
@@ -179,12 +207,20 @@ function MemberModal({ member, onClose, onSubmit }) {
             <button
               type="submit"
               disabled={loading}
-              className={`px-5 py-2 rounded-md text-white ${loading ? "bg-blue-400 cursor-not-allowed" : "bg-blue-600 hover:bg-blue-700"}`}
+              className={`px-5 py-2 rounded-md text-white ${loading
+                ? "bg-blue-400 cursor-not-allowed"
+                : "bg-blue-600 hover:bg-blue-700"
+                }`}
             >
-              {loading ? (member ? "Updating..." : "Creating...") : member ? "Update" : "Create"}
+              {loading
+                ? member
+                  ? "Updating..."
+                  : "Creating..."
+                : member
+                  ? "Update"
+                  : "Create"}
             </button>
           </div>
-
         </form>
       </motion.div>
     </div>

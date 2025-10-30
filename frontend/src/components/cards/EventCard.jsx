@@ -18,23 +18,34 @@ function EventCard({ event, onUpdate, expanded, onToggle, onDelete }) {
         className="bg-white border border-blue-600/20 rounded-2xl shadow-md cursor-pointer hover:shadow-lg transition-all duration-300 p-5 relative overflow-hidden"
       >
         {/* Header */}
-        <div className="flex items-center justify-between">
-          <div>
-            <h3 className="text-lg font-bold text-gray-900">{event.title}</h3>
-            <div className="flex items-center gap-3 text-gray-600 text-sm mt-1">
-              <span className="flex items-center gap-1">
-                <Calendar size={16} className="text-blue-600" />
-                {event.eventDate}
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0 flex-1">
+            <h3
+              className="text-lg font-bold text-gray-900 truncate"
+              title={event.title}
+            >
+              {event.title || "Untitled Event"}
+            </h3>
+            <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-gray-600 text-sm mt-1">
+              <span
+                className="flex items-center gap-1 truncate max-w-[45%]"
+                title={event.eventDate}
+              >
+                <Calendar size={16} className="text-blue-600 shrink-0" />
+                <span className="truncate">{event.eventDate || "N/A"}</span>
               </span>
-              <span className="flex items-center gap-1">
-                <MapPin size={16} className="text-blue-600" />
-                {event.location}
+              <span
+                className="flex items-center gap-1 truncate max-w-[45%]"
+                title={event.location}
+              >
+                <MapPin size={16} className="text-blue-600 shrink-0" />
+                <span className="truncate">{event.location || "Unknown"}</span>
               </span>
             </div>
           </div>
 
           {/* Action Buttons */}
-          <div className="flex gap-2">
+          <div className="flex gap-2 shrink-0">
             <button
               onClick={(e) => {
                 e.stopPropagation();
@@ -62,18 +73,28 @@ function EventCard({ event, onUpdate, expanded, onToggle, onDelete }) {
           </div>
         </div>
 
-        {/* Expanded Details */}
+        {/* Description */}
         <AnimatePresence>
-          {expanded && (
+          {expanded ? (
             <motion.div
+              key="expanded"
               initial={{ height: 0, opacity: 0 }}
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="mt-4 border-t border-gray-200 pt-3 text-sm text-gray-700 leading-relaxed break-words whitespace-normal"
+              className="mt-4 border-t border-gray-200 pt-3 text-sm text-gray-700 leading-relaxed break-words whitespace-pre-wrap overflow-y-auto max-h-[20vh]"
             >
-              {event.description || "No description provided."}
+              {event.description?.trim() || "No description provided."}
             </motion.div>
+          ) : (
+            event.description && (
+              <p
+                className="mt-3 text-gray-700 text-sm line-clamp-2 overflow-hidden text-ellipsis whitespace-normal"
+                title={event.description}
+              >
+                {event.description}
+              </p>
+            )
           )}
         </AnimatePresence>
       </motion.div>

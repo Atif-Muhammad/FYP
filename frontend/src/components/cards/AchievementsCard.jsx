@@ -7,8 +7,6 @@ function AchievementCard({ achievement, onUpdate, onDelete }) {
   const [expanded, setExpanded] = useState(false);
   const [showModal, setShowModal] = useState(false);
 
-  // console.log(achievement)
-
   return (
     <>
       <div className="bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
@@ -16,9 +14,9 @@ function AchievementCard({ achievement, onUpdate, onDelete }) {
           {/* Left section */}
           <div
             onClick={() => setExpanded(!expanded)}
-            className="flex items-center gap-4 cursor-pointer flex-1"
+            className="flex items-center gap-4 cursor-pointer flex-1 min-w-0"
           >
-            <div className="bg-yellow-100 w-12 h-12 rounded-full overflow-hidden object-fit flex items-center justify-center">
+            <div className="bg-yellow-100 w-12 h-12 rounded-full overflow-hidden flex items-center justify-center flex-shrink-0">
               {achievement?.image?.url ? (
                 <img
                   src={achievement.image?.url}
@@ -29,20 +27,20 @@ function AchievementCard({ achievement, onUpdate, onDelete }) {
                 <Award className="w-6 h-6 text-yellow-700" />
               )}
             </div>
-            <div>
-              <p className="font-semibold text-gray-800">
-                {achievement?.title}
+            <div className="min-w-0">
+              <p className="font-semibold text-gray-800 truncate">
+                {achievement?.title || "Untitled"}
               </p>
-              {/* <p className="text-sm text-gray-500">
-                {achievement?.description?.length > 50
-                  ? achievement?.description.slice(0, 50) + "..."
-                  : achievement?.description}
-              </p> */}
+              {achievement?.description && (
+                <p className="text-sm text-gray-500 truncate">
+                  {achievement.description}
+                </p>
+              )}
             </div>
           </div>
 
           {/* Action buttons */}
-          <div className="flex items-center gap-2 ml-4">
+          <div className="flex items-center gap-2 ml-4 flex-shrink-0">
             <button
               onClick={() => setShowModal(true)}
               className="p-2 rounded-full hover:bg-gray-100 transition"
@@ -71,8 +69,8 @@ function AchievementCard({ achievement, onUpdate, onDelete }) {
               transition={{ duration: 0.3 }}
               className="px-4 pb-4 border-t border-gray-100"
             >
-              <div className="pt-3 text-gray-700">
-                <p>{achievement?.description}</p>
+              <div className="pt-3 text-gray-700 break-words whitespace-pre-wrap overflow-hidden">
+                <p className="break-words">{achievement?.description || "No description available."}</p>
               </div>
             </motion.div>
           )}

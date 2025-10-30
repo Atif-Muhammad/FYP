@@ -46,6 +46,7 @@ function EventModal({ event, onClose, onSubmit }) {
 
     await onSubmit(data);
     setLoading(false);
+    onClose()
   };
 
   return (

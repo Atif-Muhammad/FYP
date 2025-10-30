@@ -25,7 +25,7 @@ function ExecutivesModal({ member, onClose, onSubmit }) {
   });
 
   const [preview, setPreview] = useState("");
-  const [loading, setLoading] = useState(false); // ✅ new loading state
+  const [loading, setLoading] = useState(false); 
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -68,7 +68,7 @@ function ExecutivesModal({ member, onClose, onSubmit }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (loading) return; // ✅ stop double submit
+    if (loading) return; 
     setLoading(true);
 
     const data = new FormData();
@@ -91,8 +91,9 @@ function ExecutivesModal({ member, onClose, onSubmit }) {
 
     if (member?._id) data.append("_id", member._id);
 
-    await onSubmit(data);
+    await onSubmit(data)
     setLoading(false);
+    onClose()
   };
 
   const limitedToNameImageOnly = [

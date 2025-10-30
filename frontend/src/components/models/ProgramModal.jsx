@@ -74,6 +74,7 @@ function ProgramModal({ program, onClose, onSubmit }) {
 
     await onSubmit(data);
     setLoading(false);
+    onClose()
   };
 
   return (

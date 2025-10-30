@@ -1,33 +1,42 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, ChevronUp, Pencil, Trash2, User } from "lucide-react";
-import MemberModal from "../models/MemberModel";
-import { BufferToBase64 } from "../../utils/bufferToBase64";
 import ExectivesModal from "../models/ExectivesModal";
-
 
 function ExectivesCard({ member, onUpdate, onDelete }) {
   const [expanded, setExpanded] = useState(false);
   const [showModal, setShowModal] = useState(false);
-  console.log(member)
+
+  const truncate = (text, limit = 50) =>
+    text && text.length > limit ? text.slice(0, limit) + "..." : text || <strong>N/A</strong>;
 
   return (
     <>
-      <div
-        className="bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden"
-      >
+      <div className="bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
         <div className="flex items-center justify-between p-4">
           <div
             onClick={() => setExpanded(!expanded)}
-            className="flex items-center gap-4 cursor-pointer flex-1"
+            className="flex items-center gap-4 cursor-pointer flex-1 min-w-0"
           >
-            <div className="bg-blue-100 w-12 h-12 rounded-full overflow-hidden object-fit">
-              {member.image?.url ? <img src={member.image?.url} alt={member.name} />
-                : <User className="w-6 h-6 text-blue-700" />}
+            <div className="bg-blue-100 w-12 h-12 rounded-full overflow-hidden flex items-center justify-center">
+              {member.image?.url ? (
+                <img
+                  src={member.image.url}
+                  alt={member.name}
+                  className="object-cover w-full h-full"
+                />
+              ) : (
+                <User className="w-6 h-6 text-blue-700" />
+              )}
             </div>
-            <div>
-              <p className="font-semibold text-gray-800">{member.name} ({member.role})</p>
-              <p className="text-sm text-gray-500 w-10">about: {member.about ? member.about:(<strong>N/A</strong>)}</p>
+
+            <div className="min-w-0 flex-1">
+              <p className="font-semibold text-gray-800 truncate">
+                {member.name} ({member.role})
+              </p>
+              <p className="text-sm text-gray-500 truncate">
+                About: {truncate(member.about, 40)}
+              </p>
             </div>
           </div>
 
@@ -59,15 +68,26 @@ function ExectivesCard({ member, onUpdate, onDelete }) {
               transition={{ duration: 0.3 }}
               className="px-4 pb-4 border-t border-gray-100"
             >
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-2 pt-3 text-gray-700">
-                <div><span className="font-medium">From:</span> {member.district ? member.district : (<strong>N/A</strong>) }</div>
-                <div><span className="font-medium">Living in:</span> {member.livingIn ? member.livingIn : (<strong>N/A</strong>)}</div>
-                <div><span className="font-medium">Socials:</span>
-                    <div>fb: {member.socials?.fb ? member.socials?.fb : (<strong>N/A</strong>)}</div>
-                    <div>insta: {member.socials?.insta ? member.socials?.insta : (<strong>N/A</strong>)}</div>
-                    <div>twitter: {member.socials?.twitter ? member.socials?.twitter : (<strong>N/A</strong>)}</div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-2 pt-3 text-gray-700 text-sm break-words">
+                <div>
+                  <span className="font-medium">From:</span> {truncate(member.district, 30)}
                 </div>
-                <div><span className="font-medium">messsage:</span> {member.message ? member.message:(<strong>N/A</strong>)}</div>
+                <div>
+                  <span className="font-medium">Living in:</span> {truncate(member.livingIn, 30)}
+                </div>
+
+                <div className="col-span-2">
+                  <span className="font-medium">Socials:</span>
+                  <div className="ml-2">
+                    <div>fb: {truncate(member.socials?.fb, 40)}</div>
+                    <div>insta: {truncate(member.socials?.insta, 40)}</div>
+                    <div>twitter: {truncate(member.socials?.twitter, 40)}</div>
+                  </div>
+                </div>
+
+                <div className="col-span-2">
+                  <span className="font-medium">Message:</span> {truncate(member.message, 100)}
+                </div>
               </div>
             </motion.div>
           )}

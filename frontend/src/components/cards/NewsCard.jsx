@@ -1,7 +1,8 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Pencil, Trash2, Calendar, User, Clock, MapPin, ChevronUp, ChevronDown } from "lucide-react";
+import { Pencil, Trash2, Clock, ChevronUp, ChevronDown } from "lucide-react";
 import NewsModal from "../models/NewsModal";
+import { toLocalTime } from "../../utils/toLocalTime";
 
 function NewsCard({ news, onUpdate, expanded, onToggle, onDelete }) {
   const [showModal, setShowModal] = useState(false);
@@ -26,12 +27,16 @@ function NewsCard({ news, onUpdate, expanded, onToggle, onDelete }) {
           />
           <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
 
-          {/* Headline overlay for dramatic effect */}
-          <h3 className="absolute bottom-2 left-4 text-xl font-bold text-white drop-shadow-lg pr-10">
+          {/* Title */}
+          <h3
+            className="absolute bottom-2 left-4 text-xl font-bold text-white drop-shadow-lg pr-10 
+            truncate max-w-[80%] sm:max-w-[85%] md:max-w-[90%]"
+            title={news.title}
+          >
             {news.title}
           </h3>
 
-          {/* Edit/Delete buttons floating on top-right */}
+          {/* Edit/Delete buttons */}
           <div className="absolute top-2 right-2 flex gap-2">
             <button
               onClick={(e) => {
@@ -52,7 +57,10 @@ function NewsCard({ news, onUpdate, expanded, onToggle, onDelete }) {
               <Trash2 size={16} className="text-red-600" />
             </button>
             <button
-              onClick={(e) => { e.stopPropagation(); onToggle(); }}
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggle();
+              }}
               className="p-2 rounded-full bg-white/80 hover:bg-white shadow"
             >
               {expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
@@ -61,19 +69,23 @@ function NewsCard({ news, onUpdate, expanded, onToggle, onDelete }) {
         </div>
 
         {/* 📰 Content Section */}
-        <div className="p-5 space-y-3">
+        <div className="p-5 space-y-3 overflow-hidden">
+          {/* Metadata */}
           <div className="flex flex-wrap items-center gap-3 text-gray-600 text-sm">
-            <div className="flex items-center gap-1">
-              <Calendar size={14} />
-              <span>{news.createdAt}</span>
+            <div className="flex items-center gap-1 min-w-[120px]">
+              <strong>Post Date:</strong>
+              <span className="truncate max-w-[120px]">{toLocalTime(news.createdAt)}</span>
             </div>
-            <div className="flex items-center gap-1">
+
+            <div className="flex items-center gap-1 min-w-[120px]">
               <Clock size={14} />
-              <span>{news.validity || "Not specified"}</span>
+              <span className="truncate max-w-[120px]">
+                {news.validity ? toLocalTime(news.validity) : news.validityType}
+              </span>
             </div>
-            
           </div>
 
+          {/* Expandable description */}
           <AnimatePresence>
             {expanded && (
               <motion.div
@@ -81,19 +93,20 @@ function NewsCard({ news, onUpdate, expanded, onToggle, onDelete }) {
                 animate={{ height: "auto", opacity: 1 }}
                 exit={{ height: 0, opacity: 0 }}
                 transition={{ duration: 0.3 }}
-                className="border-t border-green-200/50 pt-3"
+                className="border-t border-green-200/50 pt-3 overflow-hidden"
               >
-                <p className="text-gray-800 text-sm leading-relaxed break-words whitespace-normal">
+                <p
+                  className="text-gray-800 text-sm leading-relaxed break-words whitespace-pre-wrap overflow-hidden"
+                  style={{
+                    wordBreak: "break-word",
+                    overflowWrap: "anywhere",
+                  }}
+                >
                   {news.description || "No description available."}
                 </p>
               </motion.div>
             )}
           </AnimatePresence>
-
-          {/* Expand/Collapse Label
-          <div className="text-right text-xs text-green-700 font-medium">
-            {expanded ? "Show Less ▲" : "Read More ▼"}
-          </div> */}
         </div>
       </motion.div>
 

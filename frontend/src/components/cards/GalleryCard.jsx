@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Pencil, Trash2, Calendar, Image as ImageIcon, ChevronUp, ChevronDown } from "lucide-react";
+import { Pencil, Trash2, ChevronUp, ChevronDown } from "lucide-react";
 import GalleryModal from "../models/GalleryModal";
 
 function GalleryCard({ media, onUpdate, expanded, onToggle, onDelete }) {
@@ -43,11 +43,14 @@ function GalleryCard({ media, onUpdate, expanded, onToggle, onDelete }) {
                 onDelete(media);
               }}
               className="p-2 rounded-full bg-white/80 hover:bg-white shadow"
-           >
+            >
               <Trash2 size={18} className="text-red-600" />
             </button>
             <button
-              onClick={(e) => { e.stopPropagation(); onToggle(); }}
+              onClick={(e) => {
+                e.stopPropagation();
+                onToggle();
+              }}
               className="p-2 rounded-full bg-white/80 hover:bg-white shadow"
             >
               {expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
@@ -57,8 +60,15 @@ function GalleryCard({ media, onUpdate, expanded, onToggle, onDelete }) {
 
         {/* Card Header */}
         <div className="p-4">
-          <h3 className="text-xl font-bold text-gray-900">{media.title}</h3>
+          <h3
+            className="text-xl font-bold text-gray-900 truncate"
+            title={media.title}
+          >
+            {media.title || "Untitled"}
+          </h3>
         </div>
+
+        {/* Expanded Details */}
         <AnimatePresence>
           {expanded && (
             <motion.div
@@ -66,10 +76,20 @@ function GalleryCard({ media, onUpdate, expanded, onToggle, onDelete }) {
               animate={{ height: "auto", opacity: 1 }}
               exit={{ height: 0, opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="bg-gray-50 border-t border-purple-200/40 px-6 py-4 space-y-3"
+              className="bg-gray-50 border-t border-purple-200/40 px-6 py-4"
             >
-              <p className="text-gray-700 text-sm break-words whitespace-normal leading-relaxed">
-                {media.description || "No description provided."}
+              <p
+                className="text-gray-700 text-sm break-words whitespace-pre-wrap leading-relaxed overflow-hidden"
+                style={{
+                  wordBreak: "break-word",
+                  overflowWrap: "break-word",
+                  maxHeight: "12rem",
+                  textOverflow: "ellipsis",
+                }}
+              >
+                {media.description?.trim()
+                  ? media.description
+                  : "No description provided."}
               </p>
             </motion.div>
           )}

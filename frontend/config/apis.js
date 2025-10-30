@@ -158,8 +158,8 @@ export const updateExec = async (data) => {
 export const deleteExec = async (execID) => {
     try {
         const response = await axios.delete(
-            `${base_url}/members/deleteExec`,
-            { params: { execID }, withCredentials: true }
+            `${base_url}/members/admin/deleteExec?execID=${execID}`,
+            { withCredentials: true }
         );
         return response;
     } catch (error) {

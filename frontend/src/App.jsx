@@ -6,15 +6,17 @@ import Auth from "./pages/Auth";
 import { useQuery } from "@tanstack/react-query";
 import { userWho } from "../config/apis";
 import { Toaster } from "react-hot-toast";
+import LoadingScreen from "./components/ui/LoadingScreen"
 
 function App() {
-  const { data: currentUser, isLoading } = useQuery({
+  const { data: currentUser, isLoading, isError, isSuccess } = useQuery({
     queryKey: ["currentUser"],
     queryFn: userWho,
-    enabled: true
+    enabled: true,
+    retry: 1
   });
 
-  if (isLoading) return null;
+  if (isLoading && !isError && !isSuccess) return <LoadingScreen/>
 
   return (
     <>
