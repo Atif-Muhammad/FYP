@@ -53,6 +53,7 @@ import AchievementCard from "../components/cards/AchievementsCard";
 import AwardCard from "../components/cards/AwardsCard";
 import AchievementModal from "../components/models/AchievementsModal";
 import AwardModal from "../components/models/AwardsModal";
+import { toast } from "react-hot-toast";
 
 function DataScreen() {
   const { for: dataFor } = useParams();
@@ -183,7 +184,7 @@ function DataScreen() {
   };
 
   if (isLoading)
-    
+
     return (
       <div className="flex justify-center items-center min-h-[50vh]">
         <p className="animate-pulse text-gray-500">Loading {dataFor}...</p>
@@ -197,9 +198,9 @@ function DataScreen() {
   //     </div>
   //   );
 
-  
+
   const allData = data?.pages.flatMap((p) => p.data) || [];
-  
+
 
   const renderCards = () => {
     const renderProps = {
@@ -261,11 +262,10 @@ function DataScreen() {
 
       <div
         className={`
-    ${
-      dataFor === "members"
-        ? "space-y-3"
-        : "grid grid-cols-1 md:grid-cols-2 gap-6"
-    }
+    ${dataFor === "members"
+            ? "space-y-3"
+            : "grid grid-cols-1 md:grid-cols-2 gap-6"
+          }
   `}
       >
         {renderCards()}
@@ -282,7 +282,16 @@ function DataScreen() {
 
       {showModal && (
         <>
-          {dataFor === "members" && <MemberModel member={selectedItem} onClose={() => setShowModal(false)} onSubmit={handleCreate} />}
+          {dataFor === "members" && (
+            <MemberModel
+              member={selectedItem}
+              onClose={() => setShowModal(false)}
+              onSubmit={selectedItem ? handleUpdate : handleCreate}
+              isLoading={createMutation.isPending || updateMutation.isPending}
+            />
+          )}
+
+
           {dataFor === "exectives" && <ExectivesModal member={selectedItem} onClose={() => setShowModal(false)} onSubmit={handleCreate} />}
           {dataFor === "programs" && <ProgramModal program={selectedItem} onClose={() => setShowModal(false)} onSubmit={handleCreate} />}
           {dataFor === "events" && <EventModal event={selectedItem} onClose={() => setShowModal(false)} onSubmit={handleCreate} />}
