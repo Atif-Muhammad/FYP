@@ -1,6 +1,10 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useParams } from "react-router-dom";
-import { useInfiniteQuery, useMutation, useQueryClient } from "@tanstack/react-query";
+import {
+  useInfiniteQuery,
+  useMutation,
+  useQueryClient,
+} from "@tanstack/react-query";
 import {
   getMembers,
   createMember,
@@ -53,6 +57,7 @@ import AchievementCard from "../components/cards/AchievementsCard";
 import AwardCard from "../components/cards/AwardsCard";
 import AchievementModal from "../components/models/AchievementsModal";
 import AwardModal from "../components/models/AwardsModal";
+import { toast } from "react-hot-toast";
 
 function DataScreen() {
   const { for: dataFor } = useParams();
@@ -71,7 +76,7 @@ function DataScreen() {
     news: getUpdates,
     gallery: getGallery,
     achievements: getAchievements,
-    awards: getAwards
+    awards: getAwards,
   }[dataFor];
 
   const createApiFn = {
@@ -82,7 +87,7 @@ function DataScreen() {
     news: createUpdate,
     gallery: createGallery,
     achievements: createAchievement,
-    awards: createAward
+    awards: createAward,
   }[dataFor];
 
   const updateApiFn = {
@@ -93,7 +98,7 @@ function DataScreen() {
     news: updateUpdate,
     gallery: updateGallery,
     achievements: updateAchievement,
-    awards: updateAward
+    awards: updateAward,
   }[dataFor];
 
   const deleteApiFn = {
@@ -104,7 +109,7 @@ function DataScreen() {
     news: deleteUpdate,
     gallery: deleteGallery,
     achievements: deleteAchievement,
-    awards: deleteAward
+    awards: deleteAward,
   }[dataFor];
 
   const {
@@ -139,7 +144,7 @@ function DataScreen() {
     };
   }, [fetchNextPage, hasNextPage, isFetchingNextPage]);
 
-  const createMutation = useMutation({
+  const {mutate: createMutation, isPending: isCreatePending} = useMutation({
     mutationFn: (formData) => createApiFn(formData),
     onSuccess: () => {
       queryClient.invalidateQueries([dataFor]);
@@ -150,8 +155,8 @@ function DataScreen() {
       console.error(`Create ${dataFor} failed:`, err);
     },
   });
-
-  const updateMutation = useMutation({
+  
+  const {mutate: updateMutation, isPending: isUpdatePending} = useMutation({
     mutationFn: (formData) => updateApiFn(formData),
     onSuccess: () => {
       queryClient.invalidateQueries([dataFor]);
@@ -163,7 +168,7 @@ function DataScreen() {
     },
   });
 
-  const deleteMutation = useMutation({
+  const {mutate: deleteMutation, isPending: isDeletePending} = useMutation({
     mutationFn: (id) => deleteApiFn(id),
     onSuccess: () => {
       queryClient.invalidateQueries([dataFor]);
@@ -173,33 +178,24 @@ function DataScreen() {
     },
   });
 
-  const toggleExpand = (id) => setExpandedId((prev) => (prev === id ? null : id));
+  const toggleExpand = (id) =>
+    setExpandedId((prev) => (prev === id ? null : id));
 
-  const handleCreate = (formData) => createMutation.mutate(formData);
-  const handleUpdate = (formData) => updateMutation.mutate(formData);
+  const handleCreate = (formData) => createMutation(formData);
+  const handleUpdate = (formData) => updateMutation(formData);
   const confirmDel = (id) => {
-    deleteMutation.mutate(id);
+    deleteMutation(id);
     setDeleteConfirm(false);
   };
 
   if (isLoading)
-    
     return (
       <div className="flex justify-center items-center min-h-[50vh]">
         <p className="animate-pulse text-gray-500">Loading {dataFor}...</p>
       </div>
     );
 
-  // if (error)
-  //   return (
-  //     <div className="text-center text-red-500 mt-6">
-  //       Failed to load {dataFor}: {error.message}
-  //     </div>
-  //   );
-
-  
   const allData = data?.pages.flatMap((p) => p.data) || [];
-  
 
   const renderCards = () => {
     const renderProps = {
@@ -212,32 +208,72 @@ function DataScreen() {
 
     switch (dataFor) {
       case "members":
-        return allData.map((m) => <MemberCard key={m._id} member={m} {...renderProps} />);
+        return allData.map((m) => (
+          <MemberCard key={m._id} member={m} {...renderProps} />
+        ));
       case "exectives":
-        return allData.map((m) => <ExectivesCard key={m._id} member={m} {...renderProps} />);
+        return allData.map((m) => (
+          <ExectivesCard key={m._id} member={m} {...renderProps} />
+        ));
       case "programs":
         return allData.map((p) => (
-          <ProgramCard key={p._id} program={p} {...renderProps} expanded={expandedId === p._id} onToggle={() => toggleExpand(p._id)} />
+          <ProgramCard
+            key={p._id}
+            program={p}
+            {...renderProps}
+            expanded={expandedId === p._id}
+            onToggle={() => toggleExpand(p._id)}
+          />
         ));
       case "events":
         return allData.map((e) => (
-          <EventCard key={e._id} event={e} {...renderProps} expanded={expandedId === e._id} onToggle={() => toggleExpand(e._id)} />
+          <EventCard
+            key={e._id}
+            event={e}
+            {...renderProps}
+            expanded={expandedId === e._id}
+            onToggle={() => toggleExpand(e._id)}
+          />
         ));
       case "news":
         return allData.map((n) => (
-          <NewsCard key={n._id} news={n} {...renderProps} expanded={expandedId === n._id} onToggle={() => toggleExpand(n._id)} />
+          <NewsCard
+            key={n._id}
+            news={n}
+            {...renderProps}
+            expanded={expandedId === n._id}
+            onToggle={() => toggleExpand(n._id)}
+          />
         ));
       case "gallery":
         return allData.map((g) => (
-          <GalleryCard key={g._id} media={g} {...renderProps} expanded={expandedId === g._id} onToggle={() => toggleExpand(g._id)} />
+          <GalleryCard
+            key={g._id}
+            media={g}
+            {...renderProps}
+            expanded={expandedId === g._id}
+            onToggle={() => toggleExpand(g._id)}
+          />
         ));
       case "achievements":
         return allData.map((g) => (
-          <AchievementCard key={g._id} achievement={g} {...renderProps} expanded={expandedId === g._id} onToggle={() => toggleExpand(g._id)} />
+          <AchievementCard
+            key={g._id}
+            achievement={g}
+            {...renderProps}
+            expanded={expandedId === g._id}
+            onToggle={() => toggleExpand(g._id)}
+          />
         ));
       case "awards":
         return allData.map((g) => (
-          <AwardCard key={g._id} achievement={g} {...renderProps} expanded={expandedId === g._id} onToggle={() => toggleExpand(g._id)} />
+          <AwardCard
+            key={g._id}
+            achievement={g}
+            {...renderProps}
+            expanded={expandedId === g._id}
+            onToggle={() => toggleExpand(g._id)}
+          />
         ));
       default:
         return null;
@@ -247,7 +283,9 @@ function DataScreen() {
   return (
     <div className="p-4 space-y-4">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold capitalize text-gray-800">{dataFor}</h1>
+        <h1 className="text-2xl font-bold capitalize text-gray-800">
+          {dataFor}
+        </h1>
         <button
           onClick={() => {
             setSelectedItem(null);
@@ -255,7 +293,8 @@ function DataScreen() {
           }}
           className="bg-[#101828] cursor-pointer text-white px-4 py-2 rounded-lg hover:bg-[#101828eb] transition"
         >
-          + Add {dataFor.slice(0, -1)}
+          {dataFor.toLowerCase() === "gallery" ? <>+ Add {dataFor}</> : <>+ Add {dataFor.slice(0, -1)}</>}
+          
         </button>
       </div>
 
@@ -275,30 +314,92 @@ function DataScreen() {
       <div ref={loadMoreRef} className="flex justify-center py-6">
         {isFetchingNextPage ? (
           <div className="w-8 h-8 border-4 border-gray-300 border-t-blue-600 rounded-full animate-spin"></div>
-        ) : hasNextPage && (
-          <p className="text-gray-500 text-sm">Scroll down to load more...</p>
+        ) : (
+          hasNextPage && (
+            <p className="text-gray-500 text-sm">Scroll down to load more...</p>
+          )
         )}
       </div>
 
       {showModal && (
         <>
-          {dataFor === "members" && <MemberModel member={selectedItem} onClose={() => setShowModal(false)} onSubmit={handleCreate} />}
-          {dataFor === "exectives" && <ExectivesModal member={selectedItem} onClose={() => setShowModal(false)} onSubmit={handleCreate} />}
-          {dataFor === "programs" && <ProgramModal program={selectedItem} onClose={() => setShowModal(false)} onSubmit={handleCreate} />}
-          {dataFor === "events" && <EventModal event={selectedItem} onClose={() => setShowModal(false)} onSubmit={handleCreate} />}
-          {dataFor === "news" && <NewsModal news={selectedItem} onClose={() => setShowModal(false)} onSubmit={handleCreate} />}
-          {dataFor === "gallery" && <GalleryModal media={selectedItem} onClose={() => setShowModal(false)} onSubmit={handleCreate} />}
-          {dataFor === "achievements" && <AchievementModal media={selectedItem} onClose={() => setShowModal(false)} onSubmit={handleCreate} />}
-          {dataFor === "awards" && <AwardModal media={selectedItem} onClose={() => setShowModal(false)} onSubmit={handleCreate} />}
+          {dataFor === "members" && (
+            <MemberModel
+              member={selectedItem}
+              onClose={() => setShowModal(false)}
+              onSubmit={selectedItem ? handleUpdate : handleCreate}
+              loading={selectedItem ? isUpdatePending : isCreatePending}
+            />
+          )}
+
+          {dataFor === "exectives" && (
+            <ExectivesModal
+              member={selectedItem}
+              onClose={() => setShowModal(false)}
+              onSubmit={selectedItem ? handleUpdate : handleCreate}
+              loading={selectedItem ? isUpdatePending : isCreatePending}
+            />
+          )}
+          {dataFor === "programs" && (
+            <ProgramModal
+              program={selectedItem}
+              onClose={() => setShowModal(false)}
+              onSubmit={selectedItem ? handleUpdate : handleCreate}
+              loading={selectedItem ? isUpdatePending : isCreatePending}
+            />
+          )}
+          {dataFor === "events" && (
+            <EventModal
+              event={selectedItem}
+              onClose={() => setShowModal(false)}
+              onSubmit={selectedItem ? handleUpdate : handleCreate}
+              loading={selectedItem ? isUpdatePending : isCreatePending}
+            />
+          )}
+          {dataFor === "news" && (
+            <NewsModal
+              news={selectedItem}
+              onClose={() => setShowModal(false)}
+              onSubmit={selectedItem ? handleUpdate : handleCreate}
+              loading={selectedItem ? isUpdatePending : isCreatePending}
+            />
+          )}
+          {dataFor === "gallery" && (
+            <GalleryModal
+              media={selectedItem}
+              onClose={() => setShowModal(false)}
+              onSubmit={selectedItem ? handleUpdate : handleCreate}
+              loading={selectedItem ? isUpdatePending : isCreatePending}
+            />
+          )}
+          {dataFor === "achievements" && (
+            <AchievementModal
+              media={selectedItem}
+              onClose={() => setShowModal(false)}
+              onSubmit={selectedItem ? handleUpdate : handleCreate}
+              loading={selectedItem ? isUpdatePending : isCreatePending}
+            />
+          )}
+          {dataFor === "awards" && (
+            <AwardModal
+              media={selectedItem}
+              onClose={() => setShowModal(false)}
+              onSubmit={selectedItem ? handleUpdate : handleCreate}
+              loading={selectedItem ? isUpdatePending : isCreatePending}
+            />
+          )}
         </>
       )}
 
       {deleteConfirm && (
         <Confirmation
           show={deleteConfirm}
-          message={`Are You Sure to Delete "${selectedItem?.name || selectedItem?.title}"?`}
+          message={`Are You Sure to Delete "${
+            selectedItem?.name || selectedItem?.title
+          }"?`}
           onConfirm={() => confirmDel(selectedItem?._id)}
           onCancel={() => setDeleteConfirm(false)}
+          loading={isDeletePending}
         />
       )}
     </div>

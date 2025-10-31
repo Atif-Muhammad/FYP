@@ -25,9 +25,9 @@ function ExecutivesModal({ member, onClose, onSubmit }) {
   });
 
   const [preview, setPreview] = useState("");
+  const [loading, setLoading] = useState(false); 
   const fileInputRef = useRef(null);
 
-  // Prefill for editing
   useEffect(() => {
     if (member) {
       setFormData({
@@ -67,16 +67,18 @@ function ExecutivesModal({ member, onClose, onSubmit }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (loading) return; 
+    setLoading(true);
+
     const data = new FormData();
 
     for (const key in formData) {
       if (key === "socials") {
         data.append("socials", JSON.stringify(formData.socials));
-      }
-      else if (key === "image" && formData.image instanceof File) {
+      } else if (key === "image" && formData.image instanceof File) {
         data.append("image", formData.image);
-      }
-      else if (
+      } else if (
         key === "image" &&
         formData.image &&
         !(formData.image instanceof File)
@@ -89,13 +91,16 @@ function ExecutivesModal({ member, onClose, onSubmit }) {
 
     if (member?._id) data.append("_id", member._id);
 
-    await onSubmit(data);
+    await onSubmit(data)
+    setLoading(false);
+    onClose()
   };
 
   const limitedToNameImageOnly = [
     "Chief Election Officer",
     "Youth Governor",
   ].includes(formData.role);
+
   const advisorRoles = [
     "Legal Advisor",
     "Technical Advisor",
@@ -212,7 +217,6 @@ function ExecutivesModal({ member, onClose, onSubmit }) {
             </div>
           </div>
 
-          {/* Conditional Fields */}
           {!limitedToNameImageOnly && (
             <>
               {(isAdvisor || isPatron || isLeader) && (
@@ -289,7 +293,6 @@ function ExecutivesModal({ member, onClose, onSubmit }) {
                     </div>
                   </div>
 
-                  {/* Social Links */}
                   <div className="md:col-span-2 border-t pt-4 mt-2">
                     <h3 className="font-semibold text-gray-800 mb-2 flex items-center gap-2">
                       <Globe size={18} /> Social Links
@@ -321,20 +324,27 @@ function ExecutivesModal({ member, onClose, onSubmit }) {
             </>
           )}
 
-          {/* Buttons */}
           <div className="md:col-span-2 flex justify-end gap-3 pt-4">
             <button
               type="button"
               onClick={onClose}
-              className="px-5 py-2 rounded-md bg-gray-200 hover:bg-gray-300 transition"
+              disabled={loading}
+              className="px-5 py-2 rounded-md bg-gray-200 hover:bg-gray-300 transition disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-5 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition"
+              disabled={loading}
+              className="px-5 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition disabled:opacity-50"
             >
-              {member ? "Update" : "Create"}
+              {loading
+                ? member
+                  ? "Updating..."
+                  : "Creating..."
+                : member
+                  ? "Update"
+                  : "Create"}
             </button>
           </div>
         </form>

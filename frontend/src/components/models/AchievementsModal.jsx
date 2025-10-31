@@ -10,6 +10,8 @@ function AchievementModal({ achievement, onClose, onSubmit }) {
   });
   const [preview, setPreview] = useState("");
   const [isDragging, setIsDragging] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -57,19 +59,26 @@ function AchievementModal({ achievement, onClose, onSubmit }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    const data = new FormData();
+    setLoading(true);
+    setError("");
 
+    const data = new FormData();
     for (const key in formData) {
-      if (key === "image" && formData.image instanceof File)
-        data.append("image", formData.image);
-      else if (key === "image" && typeof formData.image === "object")
-        data.append("image", JSON.stringify(formData.image));
+      if (key === "image" && formData.image instanceof File) data.append("image", formData.image);
+      else if (key === "image" && typeof formData.image === "object") data.append("image", JSON.stringify(formData.image));
       else data.append(key, formData[key]);
     }
 
-    if(achievement?._id) data.append("_id", achievement?._id)
+    if (achievement?._id) data.append("_id", achievement._id);
 
-    await onSubmit(data);
+    try {
+      await onSubmit(data); // expects onSubmit to throw on error
+      setLoading(false);
+      onClose(); // auto-close on success
+    } catch (err) {
+      setLoading(false);
+      setError(err.message || "Something went wrong!");
+    }
   };
 
   return (
@@ -77,13 +86,20 @@ function AchievementModal({ achievement, onClose, onSubmit }) {
       <motion.div
         initial={{ scale: 0.9, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
-        className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-lg"
+        className="bg-white rounded-2xl shadow-lg p-8 w-full max-w-lg max-h-[90vh] overflow-y-auto"
       >
-        <h2 className="text-2xl font-semibold mb-6 text-gray-800">
+        <h2 className="text-2xl font-semibold mb-4 text-gray-800">
           {achievement ? "Edit Achievement" : "Add Achievement"}
         </h2>
 
+        {error && (
+          <div className="bg-red-100 text-red-700 px-4 py-2 rounded mb-4 text-sm">
+            {error}
+          </div>
+        )}
+
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          {/* Title */}
           <div>
             <label className="block text-sm font-medium text-gray-600 mb-1">
               Title
@@ -103,6 +119,7 @@ function AchievementModal({ achievement, onClose, onSubmit }) {
             </div>
           </div>
 
+          {/* Description */}
           <div>
             <label className="block text-sm font-medium text-gray-600 mb-1">
               Description
@@ -136,11 +153,7 @@ function AchievementModal({ achievement, onClose, onSubmit }) {
             </label>
             <div className="relative w-32 h-32 rounded-xl overflow-hidden border border-gray-300 cursor-pointer">
               {preview ? (
-                <img
-                  src={preview}
-                  alt="Preview"
-                  className="w-full h-full object-cover"
-                />
+                <img src={preview} alt="Preview" className="w-full h-full object-cover" />
               ) : (
                 <div className="w-full h-full flex items-center justify-center bg-gray-100">
                   <ImageIcon size={40} className="text-gray-400" />
@@ -154,9 +167,7 @@ function AchievementModal({ achievement, onClose, onSubmit }) {
               onChange={(e) => handleImageChange(e.target.files[0])}
               className="hidden"
             />
-            <p className="text-xs text-gray-500 mt-2">
-              Drag & drop or click to upload
-            </p>
+            <p className="text-xs text-gray-500 mt-2">Drag & drop or click to upload</p>
           </div>
 
           {/* Buttons */}
@@ -164,15 +175,17 @@ function AchievementModal({ achievement, onClose, onSubmit }) {
             <button
               type="button"
               onClick={onClose}
-              className="px-5 py-2 rounded-md bg-gray-200 hover:bg-gray-300 transition"
+              disabled={loading}
+              className="px-5 py-2 rounded-md bg-gray-200 hover:bg-gray-300 transition disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               type="submit"
-              className="px-5 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition"
+              disabled={loading}
+              className="px-5 py-2 rounded-md bg-blue-600 text-white hover:bg-blue-700 transition disabled:opacity-50"
             >
-              {achievement ? "Update" : "Create"}
+              {loading ? (achievement ? "Updating..." : "Creating...") : achievement ? "Update" : "Create"}
             </button>
           </div>
         </form>

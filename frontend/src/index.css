@@ -5,3 +5,13 @@ body, html{
   padding: 0;
   box-sizing: border-box;
 }
+
+
+@theme {
+  @keyframes scalePulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.1); }
+  }
+
+  --animate-scalePulse: scalePulse 1.5s ease-in-out infinite;
+}

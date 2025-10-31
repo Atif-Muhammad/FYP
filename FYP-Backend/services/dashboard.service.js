@@ -3,34 +3,54 @@ import Program from "../models/programModel.js"
 import Event from "../models/eventModel.js"
 import Update from "../models/updatesModel.js"
 
-export const totalMembers = async ()=>{
-    try {
-        return await Member.countDocuments({role: "member"})
-    } catch (error) {
-        throw new Error(error);
-    }
-}
+// Members
+export const totalMembers = async () => {
+  try {
+    const members = await Member.find({}, { createdAt: 1 }).sort({ createdAt: 1 });
+    return {
+      count: members.length,
+      createdAt: members.map((m) => m.createdAt),
+    };
+  } catch (error) {
+    throw new Error(error);
+  }
+};
 
-export const totalPrograms = async ()=>{
-    try {
-        return await Program.countDocuments();
-    } catch (error) {
-        throw new Error(error);
-    }
-}
+// Programs
+export const totalPrograms = async () => {
+  try {
+    const programs = await Program.find({}, { createdAt: 1 }).sort({ createdAt: 1 });
+    return {
+      count: programs.length,
+      createdAt: programs.map((p) => p.createdAt),
+    };
+  } catch (error) {
+    throw new Error(error);
+  }
+};
 
-export const totalEvents = async ()=>{
-    try {
-        return await Event.countDocuments();
-    } catch (error) {
-        throw new Error(error);
-    }
-}
+// Events
+export const totalEvents = async () => {
+  try {
+    const events = await Event.find({}, { createdAt: 1 }).sort({ createdAt: 1 });
+    return {
+      count: events.length,
+      createdAt: events.map((e) => e.createdAt),
+    };
+  } catch (error) {
+    throw new Error(error);
+  }
+};
 
-export const totalUpdates = async ()=>{
-    try {
-        return await Update.countDocuments()
-    } catch (error) {
-        throw new Error(error);
-    }
-}
+// Updates/News
+export const totalUpdates = async () => {
+  try {
+    const updates = await Update.find({}, { createdAt: 1 }).sort({ createdAt: 1 });
+    return {
+      count: updates.length,
+      createdAt: updates.map((u) => u.createdAt),
+    };
+  } catch (error) {
+    throw new Error(error);
+  }
+};

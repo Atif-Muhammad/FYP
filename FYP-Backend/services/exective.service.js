@@ -20,7 +20,7 @@ export const update = async (payload)=>{
 }
 export const remove = async (execID)=>{
     try {
-        return await Exective.deleteOne({_id, execID})
+        return await Exective.deleteOne({_id: execID})
     } catch (error) {
         throw new Error(error);
     }

@@ -96,6 +96,7 @@ function NewsModal({ update, onClose, onSubmit }) {
 
     await onSubmit(data);
     setLoading(prev=>!prev);
+    onClose()
   };
 
   return (

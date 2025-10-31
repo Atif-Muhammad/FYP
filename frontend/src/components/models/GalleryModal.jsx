@@ -76,6 +76,7 @@ function GalleryModal({ photo, onClose, onSubmit }) {
 
     await onSubmit(data);
     setLoading(false);
+    onClose()
   };
 
   return (
