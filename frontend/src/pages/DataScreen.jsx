@@ -281,7 +281,7 @@ function DataScreen() {
   };
 
   return (
-    <div className="p-4 space-y-4">
+    <div className="p-4 space-y-4 border rounded-2xl border-gray-200 min-h-screen">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-bold capitalize text-gray-800">
           {dataFor}

@@ -64,7 +64,7 @@ function Dashboard() {
   ];
 
   return (
-    <div className="space-y-8 px-4 sm:px-6 lg:px-12 py-6">
+    <div className="space-y-8 px-4 sm:px-6 lg:px-12 py-6 border rounded-2xl border-gray-200 min-h-screen">
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between border-b pb-4 gap-3">
         <div className="flex flex-col">
@@ -72,7 +72,7 @@ function Dashboard() {
             Dashboard
           </h1>
           <p className="text-gray-500 text-sm sm:text-base md:text-lg mt-1">
-            Welcome back! Here's an overview of your organization's content.
+            Welcome back! Here's an overview of Federal Youth Parliament's content.
           </p>
         </div>
 
