@@ -42,7 +42,6 @@ app.use(
 
     })
 )
-app.options("*", cors());
 
 app.get("/apis/home", homeController)
 

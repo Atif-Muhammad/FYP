@@ -35,8 +35,8 @@ export const create = async (req, res) => {
     res
       .cookie("FYP", token, {
         httpOnly: true,
-        sameSite: "strict",
-        secure: false,
+        sameSite: "none",
+        secure: true,
       })
       .json({ success: true, data: email });
   } catch (error) {
@@ -74,8 +74,8 @@ export const login = async (req, res) => {
     res
       .cookie("FYP", token, {
         httpOnly: true,
-        sameSite: "strict",
-        secure: false,
+        sameSite: "none",
+        secure: true,
       })
       .send({ success: true, data: existing?.email });
   } catch (error) {
