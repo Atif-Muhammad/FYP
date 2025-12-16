@@ -29,16 +29,20 @@ app.use(express.json())
 app.use(
     cors({
         origin: (origin, callback) => {
-            if (!origin || allowed_origins.includes(origin)) {
-                callback(null, true)
-            } else {
-                callback(new Error("Origin not allowed by CORS"))
+            if (!origin) return callback(null, true);
+
+            if (allowed_origins.includes(origin)) {
+                return callback(null, true);
             }
+            return callback(null, false);
         },
-        credentials: true
+        credentials: true,
+        methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+        allowedHeaders: ["Content-Type", "Authorization"],
+
     })
 )
-
+app.options("*", cors());
 
 app.get("/apis/home", homeController)
 
