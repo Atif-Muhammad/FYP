@@ -1,6 +1,7 @@
 
 import axios from "axios";
-const base_url = `http://localhost:3000/apis`;
+// const base_url = `http://localhost:3000/apis`;
+const base_url = `https://fyp-backend-vrt6.onrender.com/apis`;
 
 
 
