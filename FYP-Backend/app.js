@@ -16,8 +16,8 @@ import awardRouter from "./routes/award/index.js"
 const allowed_origins = [
     "http://localhost:5173",
     "http://localhost:5174",
-    'fyp-mu-smoky.vercel.app/',
-    'fyp-azure-omega.vercel.app/'
+    'fyp-mu-smoky.vercel.app',  
+    'fyp-azure-omega.vercel.app'
 ]
 
 const app = express();
