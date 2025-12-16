@@ -93,6 +93,14 @@ export const deleteExective = async (req, res) => {
     try {
         const { execID } = req.query;
         if (!execID) return res.status(400).send("Exec id required");
+
+        const member = await findById(execID);
+        if (!member) return res.status(404).json({ message: "Executive not found" });
+
+        if (member.image?.public_id) {
+            await removeFile(member.image.public_id);
+        }
+
         const deletedMember = await remove(execID);
         if (!deletedMember) return res.status(500).send("Unexpected error");
         res.status(200).json({ success: true, data: deletedMember });

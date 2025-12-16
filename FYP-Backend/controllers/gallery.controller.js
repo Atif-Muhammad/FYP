@@ -1,33 +1,33 @@
 import {
-    create,
-    findAll,
-    findById,
-    remove,
-    update,
+  create,
+  findAll,
+  findById,
+  remove,
+  update,
 } from "../services/gallery.service.js";
-import {uploadFile, removeFile} from "../services/cloudinary.service.js"
+import { uploadFile, removeFile } from "../services/cloudinary.service.js"
 
 // admin controllers
 export const addMedia = async (req, res) => {
-    try {
-        const { title, description } = req.body;
-        if (!title || !description) return res.status(400).send("Missing Field(s)");
-        if (!req.file)
-            return res.status(400).send("Must provide an image for gallery");
-        
-        const url = await uploadFile(req.file);
-        const payload = {
-            title,
-            description,
-            image: url,
-        };
-        const newMedia = await create(payload);
-        if (!newMedia) return res.status(500).send("Unexpected Error");
+  try {
+    const { title, description } = req.body;
+    if (!title || !description) return res.status(400).send("Missing Field(s)");
+    if (!req.file)
+      return res.status(400).send("Must provide an image for gallery");
 
-        res.status(200).json({ success: true, data: newMedia });
-    } catch (error) {
-        res.status(500).send({ cause: error.message });
-    }
+    const url = await uploadFile(req.file);
+    const payload = {
+      title,
+      description,
+      image: url,
+    };
+    const newMedia = await create(payload);
+    if (!newMedia) return res.status(500).send("Unexpected Error");
+
+    res.status(200).json({ success: true, data: newMedia });
+  } catch (error) {
+    res.status(500).send({ cause: error.message });
+  }
 };
 
 export const updateMedia = async (req, res) => {
@@ -86,17 +86,24 @@ export const updateMedia = async (req, res) => {
 };
 
 export const removeMedia = async (req, res) => {
-    try {
-        const { mediaID } = req.query;
-        if (!mediaID) return res.status(400).send("Media id required");
+  try {
+    const { mediaID } = req.query;
+    if (!mediaID) return res.status(400).send("Media id required");
 
-        const removedMedia = await remove(mediaID);
-        if (!removedMedia) return res.status(500).send("Unexpected Error");
+    const existing = await findById(mediaID);
+    if (!existing) return res.status(404).send("Media not found");
 
-        res.status(200).json({ success: true, data: removedMedia });
-    } catch (error) {
-        res.status(500).send({ cause: error.message });
+    if (existing.image?.public_id) {
+      await removeFile(existing.image.public_id);
     }
+
+    const removedMedia = await remove(mediaID);
+    if (!removedMedia) return res.status(500).send("Unexpected Error");
+
+    res.status(200).json({ success: true, data: removedMedia });
+  } catch (error) {
+    res.status(500).send({ cause: error.message });
+  }
 };
 
 // client controllers
@@ -104,7 +111,7 @@ export const gallery = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = 30;
-    const { data, total, pages} = await findAll(page, limit);
+    const { data, total, pages } = await findAll(page, limit);
 
     res.status(200).json({ success: true, data, page, pages, total });
   } catch (error) {

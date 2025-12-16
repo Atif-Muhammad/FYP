@@ -33,8 +33,8 @@ export const addUpdate = async (req, res) => {
     const payload = {
       title,
       description,
-      validityType: validity, 
-      validity: expiresAt, 
+      validityType: validity,
+      validity: expiresAt,
       image: url,
     };
 
@@ -115,6 +115,14 @@ export const deleteUpdate = async (req, res) => {
   try {
     const { newsID } = req.query;
     if (!newsID) return res.status(400).send("news/update id required");
+
+    const update = await findById(newsID);
+    if (!update) return res.status(404).json({ message: "News/Update not found" });
+
+    if (update.image?.public_id) {
+      await removeFile(update.image.public_id);
+    }
+
     const deletedNews = await remove(newsID);
     if (!deletedNews) return res.status(500).send("Unknown error");
     res.status(200).json({ success: true, data: deletedNews });

@@ -90,6 +90,14 @@ export const deleteProgram = async (req, res) => {
   try {
     const { programID } = req.query;
     if (!programID) return res.status(400).send("program id required");
+
+    const program = await findById(programID);
+    if (!program) return res.status(404).send("Program not found");
+
+    if (program.image?.public_id) {
+      await removeFile(program.image.public_id);
+    }
+
     const deletedProgram = await remove(programID);
     if (!deletedProgram) return res.status(500).send("Unknown error");
     res.status(200).json({ success: true, data: deletedProgram });

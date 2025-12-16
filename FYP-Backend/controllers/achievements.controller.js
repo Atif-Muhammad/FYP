@@ -80,6 +80,14 @@ export const deleteAchieve = async (req, res) => {
     try {
         const { achieveID } = req.query;
         if (!achieveID) return res.status(400).send("program id required");
+
+        const achieve = await findById(achieveID);
+        if (!achieve) return res.status(404).send("Achievement not found");
+
+        if (achieve.image?.public_id) {
+            await removeFile(achieve.image.public_id);
+        }
+
         const deletedAchieve = await remove(achieveID);
         if (!deletedAchieve) return res.status(500).send("Unknown error");
         res.status(200).json({ success: true, data: deletedAchieve });

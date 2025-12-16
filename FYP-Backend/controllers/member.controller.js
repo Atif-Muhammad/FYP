@@ -132,6 +132,15 @@ export const deleteMember = async (req, res) => {
   try {
     const { memberID } = req.query;
     if (!memberID) return res.status(400).send("Member id required");
+
+    // Find member to get image public_id
+    const member = await findById(memberID);
+    if (!member) return res.status(404).send("Member not found");
+
+    if (member.image?.public_id) {
+      await removeFile(member.image.public_id);
+    }
+
     const deletedMember = await deleteMemberService(memberID);
     if (!deletedMember) return res.status(500).send("Unexpected error");
     res.status(200).json({ success: true, data: deletedMember });

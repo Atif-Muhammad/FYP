@@ -56,7 +56,7 @@ export const updateAward = async (req, res) => {
 
         // Case 3: No file, no image field → remove existing
         else if (!req.file && !req.body.image && award.image?.public_id) {
-            await remove(award.image.public_id);
+            await removeFile(award.image.public_id);
             finalImage = undefined;
         }
 
@@ -80,6 +80,14 @@ export const deleteAward = async (req, res) => {
     try {
         const { awardID } = req.query;
         if (!awardID) return res.status(400).send("program id required");
+
+        const award = await findById(awardID);
+        if (!award) return res.status(404).send("Award not found");
+
+        if (award.image?.public_id) {
+            await removeFile(award.image.public_id);
+        }
+
         const deletedAwardID = await remove(awardID);
         if (!deletedAwardID) return res.status(500).send("Unknown error");
         res.status(200).json({ success: true, data: deletedAwardID });
