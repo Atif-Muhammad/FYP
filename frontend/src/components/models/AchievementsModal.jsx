@@ -32,6 +32,11 @@ function AchievementModal({ achievement, onClose, onSubmit }) {
 
   const handleImageChange = (file) => {
     if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      setError("Image size must be less than 5MB");
+      return;
+    }
+    setError("");
     setFormData((p) => ({ ...p, image: file }));
     setPreview(URL.createObjectURL(file));
   };
@@ -140,9 +145,8 @@ function AchievementModal({ achievement, onClose, onSubmit }) {
 
           {/* Image Upload */}
           <div
-            className={`flex flex-col items-center border border-dashed rounded-xl p-4 transition ${
-              isDragging ? "border-blue-500 bg-blue-50" : "border-gray-300"
-            }`}
+            className={`flex flex-col items-center border border-dashed rounded-xl p-4 transition ${isDragging ? "border-blue-500 bg-blue-50" : "border-gray-300"
+              }`}
             onDragOver={handleDragOver}
             onDragLeave={handleDragLeave}
             onDrop={handleDrop}

@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { X, Loader2, ImagePlus, Trash2 } from "lucide-react";
+import toast from "react-hot-toast";
 
 function NewsModal({ update, onClose, onSubmit }) {
   const [formData, setFormData] = useState({
@@ -34,7 +35,7 @@ function NewsModal({ update, onClose, onSubmit }) {
 
       // Support both Cloudinary & base64
       if (update.image?.url) setPreview(update.image.url);
-     
+
       else setPreview("");
     }
   }, [update]);
@@ -44,6 +45,10 @@ function NewsModal({ update, onClose, onSubmit }) {
     const { name, value, files } = e.target;
     if (name === "image" && files?.length > 0) {
       const file = files[0];
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("Image size must be less than 5MB");
+        return;
+      }
       setFormData({ ...formData, image: file });
       setPreview(URL.createObjectURL(file));
     } else {
@@ -64,6 +69,10 @@ function NewsModal({ update, onClose, onSubmit }) {
     setDragActive(false);
     const file = e.dataTransfer.files?.[0];
     if (file && file.type.startsWith("image/")) {
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("Image size must be less than 5MB");
+        return;
+      }
       setFormData({ ...formData, image: file });
       setPreview(URL.createObjectURL(file));
     }
@@ -78,7 +87,7 @@ function NewsModal({ update, onClose, onSubmit }) {
   // 🟢 Submit form
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setLoading(prev=> !prev);
+    setLoading(prev => !prev);
     console.log(loading);
     const data = new FormData();
     data.append("title", formData.title);
@@ -95,7 +104,7 @@ function NewsModal({ update, onClose, onSubmit }) {
     }
 
     await onSubmit(data);
-    setLoading(prev=>!prev);
+    setLoading(prev => !prev);
     onClose()
   };
 
@@ -161,8 +170,8 @@ function NewsModal({ update, onClose, onSubmit }) {
             onDragLeave={handleDrag}
             onDrop={handleDrop}
             className={`relative flex flex-col items-center justify-center w-full border-2 border-dashed rounded-xl p-6 transition-colors cursor-pointer ${dragActive
-                ? "border-blue-500 bg-blue-50"
-                : "border-gray-300 hover:border-blue-400"
+              ? "border-blue-500 bg-blue-50"
+              : "border-gray-300 hover:border-blue-400"
               }`}
             onClick={() => fileInputRef.current.click()}
           >

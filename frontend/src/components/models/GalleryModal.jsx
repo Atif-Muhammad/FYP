@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { X, Loader2, ImagePlus } from "lucide-react";
+import toast from "react-hot-toast";
 import { motion } from "framer-motion";
 
 function GalleryModal({ photo, onClose, onSubmit }) {
@@ -32,6 +33,10 @@ function GalleryModal({ photo, onClose, onSubmit }) {
     const { name, value, files } = e.target;
     if (name === "image" && files?.[0]) {
       const file = files[0];
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("Image size must be less than 5MB");
+        return;
+      }
       setFormData({ ...formData, image: file });
       setPreview(URL.createObjectURL(file));
     } else {
@@ -51,6 +56,10 @@ function GalleryModal({ photo, onClose, onSubmit }) {
     setDragActive(false);
     const file = e.dataTransfer.files?.[0];
     if (file && file.type.startsWith("image/")) {
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("Image size must be less than 5MB");
+        return;
+      }
       setFormData({ ...formData, image: file });
       setPreview(URL.createObjectURL(file));
     }
@@ -129,11 +138,10 @@ function GalleryModal({ photo, onClose, onSubmit }) {
             onDragLeave={handleDrag}
             onDrop={handleDrop}
             onClick={() => fileInputRef.current.click()}
-            className={`relative flex flex-col items-center justify-center w-full border-2 border-dashed rounded-xl p-6 transition-colors cursor-pointer ${
-              dragActive
-                ? "border-[#101828] bg-green-50"
-                : "border-gray-300 hover:border-[#101828]"
-            }`}
+            className={`relative flex flex-col items-center justify-center w-full border-2 border-dashed rounded-xl p-6 transition-colors cursor-pointer ${dragActive
+              ? "border-[#101828] bg-green-50"
+              : "border-gray-300 hover:border-[#101828]"
+              }`}
           >
             {preview ? (
               <img
@@ -171,8 +179,8 @@ function GalleryModal({ photo, onClose, onSubmit }) {
                 ? "Updating..."
                 : "Submitting..."
               : photo
-              ? "Update Photo"
-              : "Create Photo"}
+                ? "Update Photo"
+                : "Create Photo"}
           </button>
         </form>
       </motion.div>

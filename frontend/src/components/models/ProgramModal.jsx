@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import { X, Loader2, ImagePlus } from "lucide-react";
+import toast from "react-hot-toast";
 
 function ProgramModal({ program, onClose, onSubmit }) {
   const [formData, setFormData] = useState({
@@ -32,6 +33,10 @@ function ProgramModal({ program, onClose, onSubmit }) {
 
     if (name === "image" && files?.length > 0) {
       const file = files[0];
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("Image size must be less than 5MB");
+        return;
+      }
       setFormData((prev) => ({ ...prev, image: file }));
       setPreview(URL.createObjectURL(file));
     } else {
@@ -44,6 +49,10 @@ function ProgramModal({ program, onClose, onSubmit }) {
     setDragActive(false);
     const file = e.dataTransfer.files?.[0];
     if (file && file.type.startsWith("image/")) {
+      if (file.size > 5 * 1024 * 1024) {
+        toast.error("Image size must be less than 5MB");
+        return;
+      }
       setFormData((prev) => ({ ...prev, image: file }));
       setPreview(URL.createObjectURL(file));
     }
@@ -117,11 +126,10 @@ function ProgramModal({ program, onClose, onSubmit }) {
             onDragOver={handleDrag}
             onDragLeave={handleDrag}
             onDrop={handleDrop}
-            className={`relative flex flex-col items-center justify-center w-full border-2 border-dashed rounded-xl p-6 transition-colors cursor-pointer ${
-              dragActive
-                ? "border-blue-500 bg-blue-50"
-                : "border-gray-300 hover:border-blue-400"
-            }`}
+            className={`relative flex flex-col items-center justify-center w-full border-2 border-dashed rounded-xl p-6 transition-colors cursor-pointer ${dragActive
+              ? "border-blue-500 bg-blue-50"
+              : "border-gray-300 hover:border-blue-400"
+              }`}
             onClick={() => fileInputRef.current.click()}
           >
             {preview ? (
@@ -157,8 +165,8 @@ function ProgramModal({ program, onClose, onSubmit }) {
             {loading
               ? "Submitting..."
               : program
-              ? "Update Program"
-              : "Create Program"}
+                ? "Update Program"
+                : "Create Program"}
           </button>
         </form>
       </div>

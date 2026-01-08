@@ -54,6 +54,11 @@ function MemberModal({ member, onClose, onSubmit, loading }) {
 
   const handleImageChange = (file) => {
     if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      setError("Image size must be less than 5MB");
+      return;
+    }
+    setError(""); // Clear error if valid
     setFormData((prev) => ({ ...prev, image: file }));
     setPreview(URL.createObjectURL(file));
   };
@@ -84,13 +89,13 @@ function MemberModal({ member, onClose, onSubmit, loading }) {
         }
       }
 
-      await onSubmit(data); 
-      onClose(); 
+      await onSubmit(data);
+      onClose();
       // console.log(loading)
     } catch (err) {
       console.error(err);
       setError(err?.response?.data?.message || "Something went wrong. Please try again.");
-    } 
+    }
   };
 
   const fields = [

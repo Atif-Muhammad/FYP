@@ -11,6 +11,7 @@ import {
   MessageSquare,
   UserRoundPen,
 } from "lucide-react";
+import toast from "react-hot-toast";
 
 function ExecutivesModal({ member, onClose, onSubmit }) {
   const [formData, setFormData] = useState({
@@ -25,7 +26,7 @@ function ExecutivesModal({ member, onClose, onSubmit }) {
   });
 
   const [preview, setPreview] = useState("");
-  const [loading, setLoading] = useState(false); 
+  const [loading, setLoading] = useState(false);
   const fileInputRef = useRef(null);
 
   useEffect(() => {
@@ -59,6 +60,10 @@ function ExecutivesModal({ member, onClose, onSubmit }) {
 
   const handleImageChange = (file) => {
     if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      toast.error("Image size must be less than 5MB");
+      return;
+    }
     setFormData((prev) => ({ ...prev, image: file }));
     setPreview(URL.createObjectURL(file));
   };
@@ -68,7 +73,7 @@ function ExecutivesModal({ member, onClose, onSubmit }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    if (loading) return; 
+    if (loading) return;
     setLoading(true);
 
     const data = new FormData();

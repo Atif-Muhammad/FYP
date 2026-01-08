@@ -1,4 +1,4 @@
-import { uploadFile } from "../services/cloudinary.service.js";
+import { removeFile, uploadFile } from "../services/cloudinary.service.js";
 import {
   create,
   findAll,
