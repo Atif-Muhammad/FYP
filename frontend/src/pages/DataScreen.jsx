@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect } from "react";
 import { useParams } from "react-router-dom";
 import {
   useInfiniteQuery,
@@ -152,6 +152,7 @@ function DataScreen() {
       toast.success("Created successfully");
     },
     onError: (err) => {
+      toast.error(`Failed to create ${dataFor}`);
       console.error(`Create ${dataFor} failed:`, err);
     },
   });
@@ -164,6 +165,7 @@ function DataScreen() {
       toast.success("Updated successfully");
     },
     onError: (err) => {
+      toast.error(`Failed to update ${dataFor}`);
       console.error(`Update ${dataFor} failed:`, err);
     },
   });
@@ -174,6 +176,7 @@ function DataScreen() {
       queryClient.invalidateQueries([dataFor]);
     },
     onError: (err) => {
+      toast.error(`Failed to create ${dataFor}`);
       console.error(`Delete ${dataFor} failed:`, err);
     },
   });
@@ -190,13 +193,13 @@ function DataScreen() {
 
   if (isLoading)
     return (
-      <div className="flex justify-center items-center min-h-[50vh]">
+  <div className="flex justify-center items-center min-h-[50vh]">
         <p className="animate-pulse text-gray-500">Loading {dataFor}...</p>
       </div>
     );
 
   const allData = data?.pages.flatMap((p) => p.data) || [];
-
+  
   const renderCards = () => {
     const renderProps = {
       onUpdate: (item) => handleUpdate(item),
@@ -205,14 +208,14 @@ function DataScreen() {
         setDeleteConfirm(true);
       },
     };
-
+    
     switch (dataFor) {
       case "members":
         return allData.map((m) => (
           <MemberCard key={m._id} member={m} {...renderProps} />
         ));
-      case "exectives":
-        return allData.map((m) => (
+        case "exectives":
+          return allData.map((m) => (
           <ExectivesCard key={m._id} member={m} {...renderProps} />
         ));
       case "programs":
