@@ -17,6 +17,7 @@ const allowed_origins = [
     "http://localhost:5173",
     "http://localhost:5174",
     'https://fyp-mu-smoky.vercel.app',
+    'https://fyp-admin-h8c344cxz-mohatif02-gmailcoms-projects.vercel.app',
     'https://fyp-azure-omega.vercel.app'
 ]
 
