@@ -19,6 +19,9 @@ const allowed_origins = [
     'https://fyp-mu-smoky.vercel.app',
     'https://fyp-azure-omega.vercel.app',
     'https://federalyouthparliament.com',
+    'https://www.federalyouthparliament.com',
+    'https://admin.federalyouthparliament.com',
+    'https://www.admin.federalyouthparliament.com',
 ]
 
 const app = express();
