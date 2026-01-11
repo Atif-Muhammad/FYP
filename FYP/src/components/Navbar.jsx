@@ -165,7 +165,7 @@ export default function Navbar() {
 
             {/* CTA */}
             <Link
-              href="https://forms.gle/fKs6zZpsw5zzgRUu6"
+              href="https://forms.gle/SLmzTont6kSrKJyv7"
               target="blank"
               className="ml-4 bg-green-700 text-white px-4 py-2 rounded-full hover:bg-green-800"
             >
