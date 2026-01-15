@@ -136,7 +136,7 @@ export const allExecsClient = async (req, res) => {
                 ["Legal Advisor",
                     "Technical Advisor",
                     "Political Advisor",
-                    "Finance Advisor"].includes(e.role)
+                    "Financial Advisor"].includes(e.role)
             ),
             others: execs.filter((e) =>
                 ["Chief Election Officer", "Youth Governor"].includes(e.role)
