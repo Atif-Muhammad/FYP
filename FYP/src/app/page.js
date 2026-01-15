@@ -98,7 +98,7 @@ export default function HomePage() {
       A united platform where young leaders raise their voices, create impact, and lead Pakistan toward a brighter tomorrow.
     </p>
     <div className="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-      <Link href="https://forms.gle/fKs6zZpsw5zzgRUu6" target="blank" className="bg-green-600 hover:bg-green-700 text-white font-semibold rounded-full px-6 py-3 shadow-lg transition transform hover:scale-105 text-center">
+      <Link href="https://forms.gle/SLmzTont6kSrKJyv7" target="blank" className="bg-green-600 hover:bg-green-700 text-white font-semibold rounded-full px-6 py-3 shadow-lg transition transform hover:scale-105 text-center">
         Join FYP Now
       </Link>
       <Link href="/about" className="bg-white/90 hover:bg-white text-green-700 font-semibold rounded-full px-6 py-3 shadow-lg transition transform hover:scale-105 text-center">
