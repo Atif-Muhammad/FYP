@@ -236,7 +236,7 @@ function ExecutiveSection() {
           </p>
           <div className="flex justify-center gap-6">
             <a
-              href="https://forms.gle/fKs6zZpsw5zzgRUu6"
+              href="https://forms.gle/SLmzTont6kSrKJyv7"
               target="blank"
               className="bg-green-700 hover:bg-green-800 text-white px-6 py-3 rounded-full font-semibold shadow-md transition"
             >
