@@ -296,7 +296,7 @@ export default function Home() {
           </p>
           <div className="flex flex-col sm:flex-row gap-4 justify-center">
             <Link
-              href="https://forms.gle/fKs6zZpsw5zzgRUu6"
+              href="https://forms.gle/SLmzTont6kSrKJyv7"
               target="blank"
               className="px-8 py-3 rounded-full bg-white text-green-700 font-semibold shadow-lg hover:bg-gray-100 transition duration-300"
             >
