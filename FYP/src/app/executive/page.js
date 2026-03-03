@@ -132,11 +132,11 @@ function ExecutiveSection() {
     </h2>
 
     {mainExecs
-      ?.slice() // make a copy to avoid mutating original array
+      ?.slice()
       .sort((a, b) => {
         const priority = {
-          "General Secretary": 0,
-          "Chairman": 1,
+          "Chairman": 0,
+          "General Secretary": 1,
           "Vice President": 2,
         };
 
@@ -155,6 +155,7 @@ function ExecutiveSection() {
           message={executive?.message ?? ""}
           facebook={executive?.socials?.fb ?? ""}
           instagram={executive?.socials?.insta ?? ""}
+          isChairman={executive?.role === "Chairman"}
         />
       ))}
   </div>

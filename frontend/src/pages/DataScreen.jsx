@@ -1,5 +1,6 @@
-import { useState, useRef, useEffect } from "react";
+import { useState, useRef, useEffect, useMemo } from "react";
 import { useParams } from "react-router-dom";
+import { Search } from "lucide-react";
 import {
   useInfiniteQuery,
   useMutation,
@@ -66,6 +67,7 @@ function DataScreen() {
   const [selectedItem, setSelectedItem] = useState(null);
   const [deleteConfirm, setDeleteConfirm] = useState(false);
   const [expandedId, setExpandedId] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
   const loadMoreRef = useRef(null);
 
   const getApiFn = {
@@ -191,15 +193,27 @@ function DataScreen() {
     setDeleteConfirm(false);
   };
 
+  const allData = data?.pages.flatMap((p) => p.data) || [];
+
+  const filteredData = useMemo(() => {
+    if (!searchQuery.trim() || dataFor !== "members") return allData;
+    const q = searchQuery.toLowerCase();
+    return allData.filter(
+      (m) =>
+        m.name?.toLowerCase().includes(q) ||
+        m.CNIC?.toLowerCase().includes(q) ||
+        m.district?.toLowerCase().includes(q) ||
+        m.pk?.toLowerCase().includes(q)
+    );
+  }, [allData, searchQuery, dataFor]);
+
   if (isLoading)
     return (
-  <div className="flex justify-center items-center min-h-[50vh]">
+      <div className="flex justify-center items-center min-h-[50vh]">
         <p className="animate-pulse text-gray-500">Loading {dataFor}...</p>
       </div>
     );
 
-  const allData = data?.pages.flatMap((p) => p.data) || [];
-  
   const renderCards = () => {
     const renderProps = {
       onUpdate: (item) => handleUpdate(item),
@@ -211,7 +225,7 @@ function DataScreen() {
     
     switch (dataFor) {
       case "members":
-        return allData.map((m) => (
+        return filteredData.map((m) => (
           <MemberCard key={m._id} member={m} {...renderProps} />
         ));
         case "exectives":
@@ -289,6 +303,20 @@ function DataScreen() {
         <h1 className="text-2xl font-bold capitalize text-gray-800">
           {dataFor}
         </h1>
+
+        {dataFor === "members" && (
+          <div className="relative flex-1 max-w-md mx-6">
+            <Search size={18} className="absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+            <input
+              type="text"
+              placeholder="Search by name, CNIC, district, or PK..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-[#101828] focus:border-transparent transition"
+            />
+          </div>
+        )}
+
         <button
           onClick={() => {
             setSelectedItem(null);
