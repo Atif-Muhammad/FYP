@@ -123,7 +123,7 @@ function DataScreen() {
     isFetchingNextPage,
   } = useInfiniteQuery({
     queryKey: [dataFor],
-    queryFn: ({ pageParam = 1 }) => getApiFn({ page: pageParam }),
+    queryFn: ({ pageParam = 1 }) => getApiFn({ pageParam }),
     getNextPageParam: (lastPage) =>
       lastPage.page < lastPage.pages ? lastPage.page + 1 : undefined,
     enabled: !!getApiFn,
