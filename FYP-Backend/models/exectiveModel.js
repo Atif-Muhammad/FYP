@@ -3,7 +3,7 @@ import mongoose from "mongoose";
 const exectiveSchema = mongoose.Schema({
   role: {
     type: String,
-    enum: ["General Secretary", "Vice President", "Chairman", "Patron in Chief", "Legal Advisor", "Technical Advisor", "Political Advisor", "Financial Advisor", "Chief Election Officer", "Youth Governor"],
+    enum: ["General Secretary", "Vice President", "Chairman", "Patron in Chief", "Legal Advisor", "Technical Advisor", "Political Advisor", "Financial Advisor", "Chief Election Officer", "Youth Governor", "Medical Advisor"],
     require: true,
     index: true
   },

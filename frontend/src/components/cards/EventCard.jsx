@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Pencil, Trash2, Calendar, MapPin, ChevronUp, ChevronDown } from "lucide-react";
+import { Pencil, Trash2, Calendar, MapPin, ChevronDown } from "lucide-react";
 import EventModal from "../models/EventModal";
 
 function EventCard({ event, onUpdate, expanded, onToggle, onDelete }) {
@@ -15,7 +15,7 @@ function EventCard({ event, onUpdate, expanded, onToggle, onDelete }) {
       <motion.div
         layout
         onClick={onToggle}
-        className="bg-white border border-blue-600/20 rounded-2xl shadow-md cursor-pointer hover:shadow-lg transition-all duration-300 p-5 relative overflow-hidden"
+        className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 p-5 relative overflow-hidden cursor-pointer"
       >
         {/* Header */}
         <div className="flex items-start justify-between gap-3">
@@ -51,24 +51,26 @@ function EventCard({ event, onUpdate, expanded, onToggle, onDelete }) {
                 e.stopPropagation();
                 setShowModal(true);
               }}
-              className="p-2 rounded-full hover:bg-blue-100 transition"
+              aria-label={`Edit ${event.title}`}
+              className="text-blue-600 hover:bg-blue-50 rounded-full p-2 transition"
             >
-              <Pencil size={18} className="text-blue-600" />
+              <Pencil size={18} />
             </button>
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 onDelete(event);
               }}
-              className="p-2 rounded-full hover:bg-red-100 transition"
+              aria-label={`Delete ${event.title}`}
+              className="text-red-600 hover:bg-red-50 rounded-full p-2 transition"
             >
-              <Trash2 size={18} className="text-red-600" />
+              <Trash2 size={18} />
             </button>
             <button
               onClick={(e) => { e.stopPropagation(); onToggle(); }}
-              className="p-2 rounded-full bg-white/80 hover:bg-white shadow"
+              className="rounded-full p-2 hover:bg-gray-100 transition"
             >
-              {expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+              <ChevronDown size={16} className={`transition-transform duration-300 ${expanded ? "rotate-180" : ""}`} />
             </button>
           </div>
         </div>

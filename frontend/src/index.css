@@ -8,6 +8,11 @@ body, html{
 
 
 @theme {
+  /* Design-system colour tokens */
+  --color-primary: #1E3A5F;
+  --color-sidebar: #0F172A;
+  --color-surface: #FFFFFF;
+
   @keyframes scalePulse {
     0%, 100% { transform: scale(1); }
     50% { transform: scale(1.1); }

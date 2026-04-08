@@ -193,13 +193,24 @@ function DataScreen() {
 
   if (isLoading)
     return (
-  <div className="flex justify-center items-center min-h-[50vh]">
-        <p className="animate-pulse text-gray-500">Loading {dataFor}...</p>
+      <div className="flex justify-center items-center min-h-[50vh]">
+        <div className="w-8 h-8 border-4 border-slate-200 border-t-primary rounded-full animate-spin" />
       </div>
     );
 
   const allData = data?.pages.flatMap((p) => p.data) || [];
   
+  const displayName = {
+    members: "Members",
+    exectives: "Executives",
+    programs: "Programs",
+    events: "Events",
+    news: "News",
+    gallery: "Gallery",
+    achievements: "Achievements",
+    awards: "Awards",
+  }[dataFor] || (dataFor ? dataFor.charAt(0).toUpperCase() + dataFor.slice(1) : "");
+
   const renderCards = () => {
     const renderProps = {
       onUpdate: (item) => handleUpdate(item),
@@ -286,41 +297,43 @@ function DataScreen() {
   return (
     <div className="p-4 space-y-4 border rounded-2xl border-gray-200 min-h-screen">
       <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold capitalize text-gray-800">
-          {dataFor}
+        <h1 className="text-2xl font-bold text-gray-800">
+          {displayName}
         </h1>
         <button
           onClick={() => {
             setSelectedItem(null);
             setShowModal(true);
           }}
-          className="bg-[#101828] cursor-pointer text-white px-4 py-2 rounded-lg hover:bg-[#101828eb] transition"
+          className="bg-primary cursor-pointer text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition flex items-center gap-1"
         >
-          {dataFor.toLowerCase() === "gallery" ? <>+ Add {dataFor}</> : <>+ Add {dataFor.slice(0, -1)}</>}
-          
+          + Add {displayName.toLowerCase() === "gallery" ? displayName : displayName.slice(0, -1)}
         </button>
       </div>
 
-      <div
-        className={`
-    ${
-      dataFor === "members"
-        ? "space-y-3"
-        : "grid grid-cols-1 md:grid-cols-2 gap-6"
-    }
-  `}
-      >
-        {renderCards()}
-      </div>
+      {allData.length === 0 ? (
+        <div className="flex flex-col items-center justify-center min-h-[40vh] text-gray-400 gap-3">
+          <svg xmlns="http://www.w3.org/2000/svg" className="w-12 h-12" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+            <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h6m-3-3v6M3 12a9 9 0 1118 0A9 9 0 013 12z" />
+          </svg>
+          <p className="text-base">No {displayName.toLowerCase()} found</p>
+        </div>
+      ) : (
+        <div
+          className={
+            dataFor === "members" || dataFor === "exectives"
+              ? "space-y-3"
+              : "grid grid-cols-1 md:grid-cols-2 gap-6"
+          }
+        >
+          {renderCards()}
+        </div>
+      )}
 
-      {/* 🔹 Infinite Scroll Loader */}
+      {/* Infinite Scroll Sentinel */}
       <div ref={loadMoreRef} className="flex justify-center py-6">
-        {isFetchingNextPage ? (
-          <div className="w-8 h-8 border-4 border-gray-300 border-t-blue-600 rounded-full animate-spin"></div>
-        ) : (
-          hasNextPage && (
-            <p className="text-gray-500 text-sm">Scroll down to load more...</p>
-          )
+        {isFetchingNextPage && (
+          <div className="w-8 h-8 border-4 border-slate-200 border-t-primary rounded-full animate-spin" />
         )}
       </div>
 

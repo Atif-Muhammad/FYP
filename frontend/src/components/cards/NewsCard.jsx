@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Pencil, Trash2, Clock, ChevronUp, ChevronDown } from "lucide-react";
+import { Pencil, Trash2, Clock, ChevronDown } from "lucide-react";
 import NewsModal from "../models/NewsModal";
 import { toLocalTime } from "../../utils/toLocalTime";
 
@@ -16,7 +16,7 @@ function NewsCard({ news, onUpdate, expanded, onToggle, onDelete }) {
       <motion.div
         layout
         onClick={onToggle}
-        className="bg-white border border-green-600/30 rounded-2xl shadow-md overflow-hidden cursor-pointer hover:shadow-lg transition-all duration-300 w-full max-w-2xl mx-auto"
+        className="bg-white rounded-2xl shadow-md overflow-hidden cursor-pointer hover:shadow-lg transition-shadow duration-300 w-full max-w-2xl mx-auto"
       >
         {/* 🖼️ Image Section */}
         <div className="relative w-full h-56 overflow-hidden">
@@ -25,7 +25,7 @@ function NewsCard({ news, onUpdate, expanded, onToggle, onDelete }) {
             alt={news.title}
             className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-black/50 to-transparent"></div>
+          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent"></div>
 
           {/* Title */}
           <h3
@@ -43,27 +43,29 @@ function NewsCard({ news, onUpdate, expanded, onToggle, onDelete }) {
                 e.stopPropagation();
                 setShowModal(true);
               }}
-              className="p-2 rounded-full bg-white/80 hover:bg-white shadow"
+              aria-label={`Edit ${news.title}`}
+              className="text-blue-600 hover:bg-blue-50 rounded-full p-2 transition"
             >
-              <Pencil size={16} className="text-green-700" />
+              <Pencil size={16} />
             </button>
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 onDelete(news);
               }}
-              className="p-2 rounded-full bg-white/80 hover:bg-white shadow"
+              aria-label={`Delete ${news.title}`}
+              className="text-red-600 hover:bg-red-50 rounded-full p-2 transition"
             >
-              <Trash2 size={16} className="text-red-600" />
+              <Trash2 size={16} />
             </button>
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 onToggle();
               }}
-              className="p-2 rounded-full bg-white/80 hover:bg-white shadow"
+              className="rounded-full p-2 bg-white/80 hover:bg-white shadow transition"
             >
-              {expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+              <ChevronDown size={16} className={`transition-transform duration-300 ${expanded ? "rotate-180" : ""}`} />
             </button>
           </div>
         </div>

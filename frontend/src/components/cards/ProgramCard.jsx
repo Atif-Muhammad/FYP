@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, ChevronUp, Pencil, Trash2, ImageIcon } from "lucide-react";
+import { ChevronDown, Pencil, Trash2, ImageIcon } from "lucide-react";
 import ProgramModal from "../models/ProgramModal";
 
 function ProgramCard({ program, expanded, onToggle, onUpdate, onDelete }) {
@@ -8,7 +8,7 @@ function ProgramCard({ program, expanded, onToggle, onUpdate, onDelete }) {
 
   return (
     <>
-      <div className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-all duration-300 overflow-hidden w-full sm:max-w-xl mx-auto">
+      <div className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden w-full sm:max-w-xl mx-auto">
         
         {/* Image Section */}
         <div
@@ -32,27 +32,29 @@ function ProgramCard({ program, expanded, onToggle, onUpdate, onDelete }) {
                 e.stopPropagation();
                 setShowModal(true);
               }}
-              className="p-2 rounded-full bg-white/80 hover:bg-white shadow"
+              aria-label={`Edit ${program.title}`}
+              className="text-blue-600 hover:bg-blue-50 rounded-full p-2 transition"
             >
-              <Pencil size={16} className="text-blue-600" />
+              <Pencil size={16} />
             </button>
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 onDelete(program);
               }}
-              className="p-2 rounded-full bg-white/80 hover:bg-white shadow"
+              aria-label={`Delete ${program.title}`}
+              className="text-red-600 hover:bg-red-50 rounded-full p-2 transition"
             >
-              <Trash2 size={16} className="text-red-600" />
+              <Trash2 size={16} />
             </button>
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 onToggle();
               }}
-              className="p-2 rounded-full bg-white/80 hover:bg-white shadow"
+              className="rounded-full p-2 bg-white/80 hover:bg-white shadow transition"
             >
-              {expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+              <ChevronDown size={16} className={`transition-transform duration-300 ${expanded ? "rotate-180" : ""}`} />
             </button>
           </div>
         </div>

@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, ChevronUp, Pencil, Trash2, User } from "lucide-react";
+import { ChevronDown, Pencil, Trash2, User } from "lucide-react";
 import MemberModal from "../models/MemberModel";
 import {toLocalTime} from "../../utils/toLocalTime"
 
@@ -10,7 +10,7 @@ function MemberCard({ member, onUpdate, onDelete }) {
 
   return (
     <>
-      <div className="bg-white border border-gray-200 rounded-2xl shadow-sm hover:shadow-md transition-all duration-300 overflow-hidden">
+      <div className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 overflow-hidden">
         <div className="flex items-center justify-between p-4">
           {/* Left: Image + Name */}
           <div
@@ -43,18 +43,23 @@ function MemberCard({ member, onUpdate, onDelete }) {
           <div className="flex items-center gap-2 ml-4 shrink-0">
             <button
               onClick={() => setShowModal(true)}
-              className="p-2 rounded-full hover:bg-gray-100 transition"
+              aria-label={`Edit ${member.name}`}
+              className="text-blue-600 hover:bg-blue-50 rounded-full p-2 transition"
             >
-              <Pencil className="w-5 h-5 text-blue-600" />
+              <Pencil className="w-5 h-5" />
             </button>
             <button
               onClick={() => onDelete(member)}
-              className="p-2 rounded-full hover:bg-gray-100 transition"
+              aria-label={`Delete ${member.name}`}
+              className="text-red-600 hover:bg-red-50 rounded-full p-2 transition"
             >
-              <Trash2 className="w-5 h-5 text-red-600" />
+              <Trash2 className="w-5 h-5" />
             </button>
-            <button onClick={() => setExpanded(!expanded)}>
-              {expanded ? <ChevronUp /> : <ChevronDown />}
+            <button
+              onClick={() => setExpanded(!expanded)}
+              className="rounded-full p-2 hover:bg-gray-100 transition"
+            >
+              <ChevronDown className={`w-5 h-5 transition-transform duration-300 ${expanded ? "rotate-180" : ""}`} />
             </button>
           </div>
         </div>

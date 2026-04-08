@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Pencil, Trash2, ChevronUp, ChevronDown } from "lucide-react";
+import { Pencil, Trash2, ChevronDown } from "lucide-react";
 import GalleryModal from "../models/GalleryModal";
 
 function GalleryCard({ media, onUpdate, expanded, onToggle, onDelete }) {
@@ -14,7 +14,7 @@ function GalleryCard({ media, onUpdate, expanded, onToggle, onDelete }) {
     <>
       <motion.div
         layout
-        className="bg-white border border-purple-600/30 rounded-2xl shadow-md overflow-hidden hover:shadow-lg transition-all duration-300"
+        className="bg-white rounded-2xl shadow-md overflow-hidden hover:shadow-lg transition-shadow duration-300"
       >
         {/* Image Wrapper */}
         <div
@@ -33,27 +33,29 @@ function GalleryCard({ media, onUpdate, expanded, onToggle, onDelete }) {
                 e.stopPropagation();
                 setShowModal(true);
               }}
-              className="p-2 rounded-full bg-white/80 hover:bg-white shadow"
+              aria-label={`Edit ${media.title}`}
+              className="text-blue-600 hover:bg-blue-50 rounded-full p-2 transition bg-white/80"
             >
-              <Pencil size={18} className="text-green-700" />
+              <Pencil size={18} />
             </button>
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 onDelete(media);
               }}
-              className="p-2 rounded-full bg-white/80 hover:bg-white shadow"
+              aria-label={`Delete ${media.title}`}
+              className="text-red-600 hover:bg-red-50 rounded-full p-2 transition bg-white/80"
             >
-              <Trash2 size={18} className="text-red-600" />
+              <Trash2 size={18} />
             </button>
             <button
               onClick={(e) => {
                 e.stopPropagation();
                 onToggle();
               }}
-              className="p-2 rounded-full bg-white/80 hover:bg-white shadow"
+              className="rounded-full p-2 bg-white/80 hover:bg-white shadow transition"
             >
-              {expanded ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+              <ChevronDown size={16} className={`transition-transform duration-300 ${expanded ? "rotate-180" : ""}`} />
             </button>
           </div>
         </div>

@@ -111,6 +111,7 @@ function ExecutivesModal({ member, onClose, onSubmit }) {
     "Technical Advisor",
     "Political Advisor",
     "Financial Advisor",
+    "Medical Advisor",
   ];
   const isAdvisor = advisorRoles.includes(formData.role);
   const isPatron = formData.role === "Patron in Chief";
@@ -165,6 +166,7 @@ function ExecutivesModal({ member, onClose, onSubmit }) {
                 <option value="Technical Advisor">Technical Advisor</option>
                 <option value="Political Advisor">Political Advisor</option>
                 <option value="Financial Advisor">Financial Advisor</option>
+                <option value="Medical Advisor">Medical Advisor</option>
                 <option value="Chief Election Officer">
                   Chief Election Officer
                 </option>
