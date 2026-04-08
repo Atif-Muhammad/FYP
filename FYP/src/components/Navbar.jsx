@@ -95,14 +95,15 @@ export default function Navbar() {
                 >
                   Mission
                 </Link>
-                <Link
-                  href="/executive"
-                  className="block px-4 py-2 hover:text-green-700 hover:scale-110 hover:font-bold transition transform duration-200"
-                >
-                  Executive Members
-                </Link>
               </div>
             </div>
+
+            <Link
+              href="/executive"
+              className="hover:text-green-700 hover:scale-110 hover:font-bold transition transform duration-200"
+            >
+              Executive Members
+            </Link>
 
             {/* Events dropdown */}
             <div className="relative group">
@@ -195,11 +196,12 @@ export default function Navbar() {
               <Link href="/about" onClick={closeMobileMenu} className="block hover:text-green-700 hover:font-bold">
                 Mission
               </Link>
-              <Link href="/executive" onClick={closeMobileMenu} className="block hover:text-green-700 hover:font-bold">
-                Executive Members
-              </Link>
             </div>
           </details>
+
+          <Link href="/executive" onClick={closeMobileMenu} className="block hover:text-green-700 hover:font-bold">
+            Executive Members
+          </Link>
 
           {/* Events */}
           <details className="group" onClick={(e) => e.stopPropagation()}>

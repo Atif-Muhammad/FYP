@@ -16,7 +16,7 @@ function Dashboard() {
   const queryClient = useQueryClient();
 
   const handleLogout = async () => {
-    await axios.get("http://localhost:3000/apis/logout", { withCredentials: true });
+    await axios.get("https://fyp-backend-vrt6.onrender.com/apis/logout", { withCredentials: true });
     queryClient.invalidateQueries(["currentUser"]);
     queryClient.setQueryData(["currentUser"], null);
     navigate("/", { replace: true });

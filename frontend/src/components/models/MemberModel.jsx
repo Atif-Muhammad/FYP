@@ -7,7 +7,6 @@ import {
   Pin,
   IdCard,
   Calendar,
-  Mail,
   Phone,
   UserCircle2,
   AlertCircle
@@ -19,7 +18,6 @@ function MemberModal({ member, onClose, onSubmit, loading }) {
     father_name: "",
     CNIC: "",
     DOB: "",
-    email: "",
     phone: "",
     pk: "",
     district: "",
@@ -105,7 +103,6 @@ function MemberModal({ member, onClose, onSubmit, loading }) {
     { label: "Date of Birth", name: "DOB", type: "date", icon: <Calendar size={18} /> },
     { label: "District", name: "district", type: "text", icon: <Pin size={18} /> },
     { label: "PK", name: "pk", type: "text", icon: "PK-" },
-    { label: "Email", name: "email", type: "email", icon: <Mail size={18} /> },
     { label: "Phone", name: "phone", type: "text", icon: <Phone size={18} /> },
     { label: "About", name: "about", type: "textArea", icon: <UserRoundPen size={18} /> },
   ];
