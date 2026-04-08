@@ -195,6 +195,17 @@ function DataScreen() {
 
   const allData = data?.pages.flatMap((p) => p.data) || [];
 
+  const displayName = {
+    members: "Members",
+    exectives: "Executives",
+    programs: "Programs",
+    events: "Events",
+    news: "News",
+    gallery: "Gallery",
+    achievements: "Achievements",
+    awards: "Awards",
+  }[dataFor] || (dataFor ? dataFor.charAt(0).toUpperCase() + dataFor.slice(1) : "");
+
   const filteredData = useMemo(() => {
     if (!searchQuery.trim() || dataFor !== "members") return allData;
     const q = searchQuery.toLowerCase();
@@ -210,30 +221,9 @@ function DataScreen() {
   if (isLoading)
     return (
       <div className="flex justify-center items-center min-h-[50vh]">
-<<<<<<< HEAD
-        <div className="w-8 h-8 border-4 border-slate-200 border-t-primary rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-slate-200 border-t-[var(--color-primary)] rounded-full animate-spin" />
       </div>
     );
-
-  const allData = data?.pages.flatMap((p) => p.data) || [];
-  
-  const displayName = {
-    members: "Members",
-    exectives: "Executives",
-    programs: "Programs",
-    events: "Events",
-    news: "News",
-    gallery: "Gallery",
-    achievements: "Achievements",
-    awards: "Awards",
-  }[dataFor] || (dataFor ? dataFor.charAt(0).toUpperCase() + dataFor.slice(1) : "");
-
-=======
-        <p className="animate-pulse text-gray-500">Loading {dataFor}...</p>
-      </div>
-    );
-
->>>>>>> ceca0084fe9d57ffd56441cfd2228c7aa524d148
   const renderCards = () => {
     const renderProps = {
       onUpdate: (item) => handleUpdate(item),
@@ -370,7 +360,7 @@ function DataScreen() {
       {/* Infinite Scroll Sentinel */}
       <div ref={loadMoreRef} className="flex justify-center py-6">
         {isFetchingNextPage && (
-          <div className="w-8 h-8 border-4 border-slate-200 border-t-primary rounded-full animate-spin" />
+          <div className="w-8 h-8 border-4 border-slate-200 border-t-[var(--color-primary)] rounded-full animate-spin" />
         )}
       </div>
 
