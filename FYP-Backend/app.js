@@ -34,17 +34,18 @@ app.use(
     cors({
         origin: (origin, callback) => {
             if (!origin) return callback(null, true);
-            if (allowed_origins.includes(origin)) return callback(null, true);
-            return callback(new Error(`CORS: origin ${origin} not allowed`));
+
+            if (allowed_origins.includes(origin)) {
+                return callback(null, true);
+            }
+            return callback(null, false);
         },
         credentials: true,
         methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"],
         allowedHeaders: ["Content-Type", "Authorization"],
+
     })
 )
-
-// Explicitly handle preflight requests for all routes
-app.options("*", cors())
 
 app.get("/apis/home", homeController)
 
