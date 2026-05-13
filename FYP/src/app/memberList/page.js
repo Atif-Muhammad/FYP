@@ -1,51 +1,93 @@
 "use client";
 import { useInfiniteQuery } from "@tanstack/react-query";
-import React, { useState, useMemo } from "react";
+import React, { useState, useEffect } from "react";
 import { getMembers } from "../../../config/apis";
 import { PreFooter } from "@/components/PreFooter";
 
 const MembersPage = () => {
   const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
+
+  useEffect(() => {
+    const timer = setTimeout(() => setDebouncedQuery(searchQuery.trim()), 400);
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
 
   const {
     data,
-    isLoading,
+    isFetching,
     error,
     fetchNextPage,
     hasNextPage,
     isFetchingNextPage,
   } = useInfiniteQuery({
-    queryKey: ["members"],
-    queryFn: ({ pageParam = 1 }) => getMembers({ pageParam }),
+    queryKey: ["members", debouncedQuery],
+    queryFn: ({ pageParam = 1 }) => getMembers({ pageParam, search: debouncedQuery }),
     getNextPageParam: (lastPage) =>
       lastPage?.page < lastPage?.pages ? lastPage.page + 1 : undefined,
   });
 
   const members = data?.pages?.flatMap((page) => page?.data || []) || [];
 
-  const filteredMembers = useMemo(() => {
-    if (!searchQuery.trim()) return members;
-    const q = searchQuery.toLowerCase();
-    return members.filter(
-      (m) =>
-        m.name?.toLowerCase().includes(q) ||
-        m.CNIC?.toLowerCase().includes(q)
-    );
-  }, [members, searchQuery]);
-
-  if (isLoading)
-    return (
-      <div className="flex justify-center items-center h-screen text-green-700 text-2xl font-semibold">
-        Loading members...
-      </div>
-    );
-
-  if (error)
-    return (
-      <div className="text-center text-red-600 mt-10 font-semibold">
-        Failed to load members.
-      </div>
-    );
+  const tableBody = () => {
+    if (isFetching && members.length === 0) {
+      return (
+        <tr>
+          <td colSpan={7} className="py-12 text-center text-green-700 font-medium">
+            <div className="flex items-center justify-center gap-2">
+              <svg className="animate-spin w-5 h-5 text-green-700" fill="none" viewBox="0 0 24 24">
+                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" />
+                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8v8H4z" />
+              </svg>
+              Loading members...
+            </div>
+          </td>
+        </tr>
+      );
+    }
+    if (error) {
+      return (
+        <tr>
+          <td colSpan={7} className="py-12 text-center text-red-500 font-medium">
+            Failed to load members.
+          </td>
+        </tr>
+      );
+    }
+    if (members.length === 0) {
+      return (
+        <tr>
+          <td colSpan={7} className="py-12 text-center text-gray-400">
+            {searchQuery.trim() ? `No members found for "${searchQuery}".` : "No members found."}
+          </td>
+        </tr>
+      );
+    }
+    return members.map((member, index) => (
+      <tr
+        key={member._id || index}
+        className={`transition duration-150 hover:bg-green-50 ${isFetching ? "opacity-50" : ""} ${index % 2 === 0 ? "bg-white" : "bg-gray-50/50"}`}
+      >
+        <td className="py-4 px-5 text-gray-500 font-medium">{index + 1}</td>
+        <td className="py-4 px-5">
+          <img
+            src={member?.image?.url || "/default-avatar.png"}
+            alt={member?.name || "Member"}
+            className="w-14 h-14 rounded-full object-cover shadow ring-2 ring-green-100"
+          />
+        </td>
+        <td className="py-4 px-5 font-semibold text-gray-900">{member?.name || "N/A"}</td>
+        <td className="py-4 px-5 text-gray-600">{member?.father_name || "N/A"}</td>
+        <td className="py-4 px-5 text-gray-600 capitalize">{member?.district || "N/A"}</td>
+        <td className="py-4 px-5">
+          <span className="inline-block bg-green-100 text-green-800 font-semibold text-xs px-3 py-1 rounded-full">
+            {member?.pk ? `PK-${member.pk}` : "N/A"}
+          </span>
+        </td>
+        <td className="py-4 px-5 text-gray-600 font-mono text-xs">{member?.CNIC || "N/A"}</td>
+      </tr>
+    ));
+  };
 
   return (
     <main>
@@ -94,42 +136,7 @@ const MembersPage = () => {
 
             {/* Table Body */}
             <tbody className="divide-y divide-gray-100">
-              {filteredMembers.length > 0 ? (
-                filteredMembers.map((member, index) => (
-                  <tr
-                    key={member._id || index}
-                    className={`transition duration-150 hover:bg-green-50 ${index % 2 === 0 ? "bg-white" : "bg-gray-50/50"}`}
-                  >
-                    <td className="py-4 px-5 text-gray-500 font-medium">{index + 1}</td>
-                    <td className="py-4 px-5">
-                      <img
-                        src={member?.image?.url || "/default-avatar.png"}
-                        alt={member?.name || "Member"}
-                        className="w-14 h-14 rounded-full object-cover shadow ring-2 ring-green-100"
-                      />
-                    </td>
-                    <td className="py-4 px-5 font-semibold text-gray-900">
-                      {member?.name || "N/A"}
-                    </td>
-                    <td className="py-4 px-5 text-gray-600">{member?.father_name || "N/A"}</td>
-                    <td className="py-4 px-5 text-gray-600 capitalize">{member?.district || "N/A"}</td>
-                    <td className="py-4 px-5">
-                      <span className="inline-block bg-green-100 text-green-800 font-semibold text-xs px-3 py-1 rounded-full">
-                        {member?.pk ? `PK-${member.pk}` : "N/A"}
-                      </span>
-                    </td>
-                    <td className="py-4 px-5 text-gray-600 font-mono text-xs">{member?.CNIC || "N/A"}</td>
-                  </tr>
-                ))
-              ) : (
-                <tr>
-                  <td colSpan={7} className="py-12 text-center text-gray-400">
-                    {searchQuery.trim()
-                      ? `No members found for "${searchQuery}".`
-                      : "No members found."}
-                  </td>
-                </tr>
-              )}
+              {tableBody()}
             </tbody>
           </table>
         </div>

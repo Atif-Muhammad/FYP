@@ -50,9 +50,11 @@ export const getGallery = async ({ pageParam = 1 })=>{
         throw new Error(error);
     }
 }
-export const getMembers = async ({ pageParam = 1 })=>{
+export const getMembers = async ({ pageParam = 1, search = "" })=>{
     try {
-        const response = await axios.get(`${base_url}/members/client/allMembers?page=${pageParam}`, {withCredentials: true})
+        const params = new URLSearchParams({ page: pageParam });
+        if (search) params.set("search", search);
+        const response = await axios.get(`${base_url}/members/client/allMembers?${params}`, {withCredentials: true})
         return response.data;
     } catch (error) {
         throw new Error(error);

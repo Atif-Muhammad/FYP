@@ -155,7 +155,8 @@ export const allMembers = async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const limit = 30;
-    const { members, total, pages } = await findAll(page, limit);
+    const search = req.query.search || "";
+    const { members, total, pages } = await findAll(page, limit, search);
 
 
     res.status(200).json({

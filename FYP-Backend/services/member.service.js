@@ -34,15 +34,24 @@ export const deleteMemberService = async (memberID)=>{
 // client/admin services
 
 
-export const findAll = async (page = 1, limit = 30) => {
+export const findAll = async (page = 1, limit = 30, search = "") => {
   try {
     const skip = (page - 1) * limit;
-    const members = await Member.find({})
+    const filter = search
+      ? {
+          $or: [
+            { name: { $regex: search, $options: "i" } },
+            { CNIC: { $regex: search, $options: "i" } },
+          ],
+        }
+      : {};
+
+    const members = await Member.find(filter)
       .sort({ createdAt: -1 })
       .skip(skip)
       .limit(limit);
 
-    const total = await Member.countDocuments({});
+    const total = await Member.countDocuments(filter);
 
     return { members, total, page, pages: Math.ceil(total / limit) };
   } catch (error) {
