@@ -1,0 +1,103 @@
+@import "tailwindcss";
+
+@theme {
+  /* === FYP Brand Colors === */
+  --color-accent: #D4AF37;
+  --color-accent-dark: #B8960C;
+  --color-fyp-green: #014421;
+  --color-fyp-green-light: #016630;
+
+  /* === Extended Neutrals === */
+  --color-bg-base: #F8F9FA;
+  --color-bg-surface: #FFFFFF;
+  --color-bg-dark: #012B15;
+  --color-text-primary: #0D1F13;
+  --color-text-secondary: #4A5568;
+  --color-text-muted: #718096;
+  --color-border: #E2E8F0;
+  --color-danger: #DC2626;
+  --color-danger-light: #FEE2E2;
+
+  /* === Keep primary mapped to fyp-green for bg-primary usage === */
+  --color-primary: #014421;
+
+  /* === Animations === */
+  @keyframes scalePulse {
+    0%, 100% { transform: scale(1); }
+    50%       { transform: scale(1.1); }
+  }
+  --animate-scalePulse: scalePulse 1.5s ease-in-out infinite;
+
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+  --animate-fadeIn: fadeIn 0.3s ease forwards;
+}
+
+/* === Global Reset & Base === */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html, body {
+  margin: 0;
+  padding: 0;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: var(--color-bg-base);
+  color: var(--color-text-primary);
+  line-height: 1.6;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* === Scrollbar Styling === */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-fyp-green-light);
+}
+
+/* === Modal Backdrop === */
+.modal-backdrop {
+  background: rgba(1, 36, 18, 0.6);
+  backdrop-filter: blur(4px);
+}
+
+/* === Form Input Focus === */
+.fyp-input {
+  border: 1.5px solid var(--color-border);
+  border-radius: 8px;
+  padding: 0.5rem 0.75rem;
+  width: 100%;
+  font-size: 0.875rem;
+  color: var(--color-text-primary);
+  background: var(--color-bg-surface);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  outline: none;
+}
+.fyp-input:focus {
+  border-color: var(--color-fyp-green-light);
+  box-shadow: 0 0 0 3px rgba(1, 102, 48, 0.12);
+}
+
+/* === Search Pill === */
+.fyp-search {
+  border: 1.5px solid var(--color-border);
+  border-radius: 9999px;
+  background: var(--color-bg-surface);
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  outline: none;
+}
+.fyp-search:focus {
+  border-color: var(--color-fyp-green-light);
+  box-shadow: 0 0 0 3px rgba(1, 68, 33, 0.12);
+}
